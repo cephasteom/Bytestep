@@ -15,22 +15,25 @@
     export let selected: boolean = false;
     export let ghost: boolean = false;
     export let dragging: boolean = false;
+    export let amp: number = 0.75;
 
     $: backgroundColor = on || active || ghost
         ? colour
         : (Math.floor(division / 4) % 2)
             ? 'var(--grey-lighter)'
             : 'var(--grey-dark)';
+    $: opacity = on ? 0.2 + amp * 0.8 : 1;
 </script>
 
 <button 
     tabindex="-1"
     class="cell" 
     style={`
-        grid-column: ${division + 1}; 
-        grid-row: ${row}; 
-        background-color: ${backgroundColor}; 
-        height: ${height};`
+        grid-column: ${division + 1};
+        grid-row: ${row};
+        background-color: ${backgroundColor};
+        height: ${height};
+        opacity: ${opacity};`
     }
     class:cell--on={on}
     class:mouseIsDown={mouseIsDown}

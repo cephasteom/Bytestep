@@ -122,11 +122,31 @@
             }
         }
         selectedNotes = newSelected;
+        const first = newSelected.values().next().value;
+        if (first) { const [d, n] = first.split(':').map(Number); currentCell = { division: d, note: n }; }
     };
 
     $: collapsed = !$activeSequencers.includes(id);
     $: colour = `var(--theme-${(id % 5) + 1})`;
     $: minWidth = $bars * $divisions * 40 + "px";
+
+    // keys for all notes that currently exist in the store
+    $: existingNoteKeys = new Set($data[id].notes.flatMap(n => {
+        for (let d = 0; d < $divisions * $bars; d++) {
+            if (happensWithin(d, n.position)) return [cellKey(d, n.note)];
+        }
+        return [];
+    }));
+
+    // clean up selection and focus when external changes remove notes
+    $: {
+        existingNoteKeys;
+        const filtered = new Set([...selectedNotes].filter(k => existingNoteKeys.has(k)));
+        if (filtered.size !== selectedNotes.size) selectedNotes = filtered;
+        if (currentCell.division !== -1 && !existingNoteKeys.has(cellKey(currentCell.division, currentCell.note))) {
+            currentCell = { division: -1, note: -1 };
+        }
+    }
     $: ghostCells = mouseIsDown && selectedNotes.size > 0 && hoverDivision !== -1
         ? new Set([...selectedNotes].map(key => {
             const [d, n] = key.split(':').map(Number);
@@ -172,6 +192,8 @@
                         return [];
                     })
                 );
+                const first = selectedNotes.values().next().value;
+                if (first) { const [d, n] = first.split(':').map(Number); currentCell = { division: d, note: n }; }
                 return;
             }
 
@@ -282,6 +304,7 @@
                         note={noteIndex}
                         row={(notes - noteIndex) + 1}
                         on={$data[id].notes.some(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)}
+                        amp={$data[id].notes.find(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)?.amp ?? 0.75}
                         focused={currentCell.division === divisionIndex && currentCell.note === noteIndex}
                         selected={selectedNotes.has(cellKey(divisionIndex, noteIndex))}
                         active={$sequencerTs[id] !== -1 && $sequencerTs[id] % ($divisions * $bars) === divisionIndex}
@@ -299,13 +322,23 @@
         </div>
 
     </div>
-    {#if selectedNotes.size === 1 && (currentCell.division !== -1 && currentCell.note !== -1)}
-        <Meta 
+    {#if currentCell.division !== -1 && currentCell.note !== -1 && $data[id].notes.some(n => n.position === divisionToPosition(currentCell.division) && n.note === currentCell.note)}
+        <Meta
             {id}
             amp={$data[id].notes.find(n => n.position === divisionToPosition(currentCell.division) && n.note === currentCell.note)?.amp || 0.75}
             dur={$data[id].notes.find(n => n.position === divisionToPosition(currentCell.division) && n.note === currentCell.note)?.duration || 0.75}
-            onChangeAmp={amp => updateNoteAmp(id, divisionToPosition(currentCell.division), currentCell.note, amp)}
-            onChangeDur={duration => updateNoteDuration(id, divisionToPosition(currentCell.division), currentCell.note, duration)}
+            onChangeAmp={amp => {
+                [...(selectedNotes.size > 0 ? selectedNotes : [cellKey(currentCell.division, currentCell.note)])].forEach(key => {
+                    const [d, n] = key.split(':').map(Number);
+                    updateNoteAmp(id, divisionToPosition(d), n, amp);
+                });
+            }}
+            onChangeDur={duration => {
+                [...(selectedNotes.size > 0 ? selectedNotes : [cellKey(currentCell.division, currentCell.note)])].forEach(key => {
+                    const [d, n] = key.split(':').map(Number);
+                    updateNoteDuration(id, divisionToPosition(d), n, duration);
+                });
+            }}
         />
     {/if}
 </section>
