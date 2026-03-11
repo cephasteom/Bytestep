@@ -178,5 +178,44 @@ export const gates = readable<Gate[]>([
         qubits: 3,
         description: 'Toffoli gate. Requires three qubits.',
         params: []
-    }
+    },
+    {
+        name: 'CRX',
+        symbol: 'crx',
+        qubits: 2,
+        description: 'Controlled rotation around the x-axis by given angle. Requires two qubits.',
+        params: [
+            {
+                name: 'theta',
+                type: 'number',
+                default: 0
+            }
+        ]
+    },
+    {
+        name: 'CRY',
+        symbol: 'cry',
+        qubits: 2,
+        description: 'Controlled rotation around the y-axis by given angle. Requires two qubits.',
+        params: [
+            {
+                name: 'theta',
+                type: 'number',
+                default: 0
+            }
+        ]
+    },
+    {
+        name: 'CRZ',
+        symbol: 'crz',
+        qubits: 2,
+        description: 'Controlled rotation around the z-axis by given angle. Requires two qubits.',
+        params: [
+            {
+                name: 'phi',
+                type: 'number',
+                default: 0
+            }
+        ]
+    },
 ])
