@@ -24,7 +24,7 @@
         const svg = thisSvg.querySelector('.qc-circuit')
         const scroll = thisContainer.getBoundingClientRect().y - (svg?.getBoundingClientRect().y || 0);
         return clamp(Math.floor((
-            y - thisContainer.getBoundingClientRect().y + scroll + 28
+            y - thisContainer.getBoundingClientRect().y + scroll
         ) / 80), 0, 16);
     }
 
