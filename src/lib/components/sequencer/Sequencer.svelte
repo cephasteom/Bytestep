@@ -18,6 +18,13 @@
     let scrollableDiv: HTMLDivElement;
     let selectedNotes = new Set<string>();
 
+    type HistoryEntry =
+        | { type: 'add'; position: number; note: number }
+        | { type: 'remove'; entries: { position: number; note: number; amp: number; duration: number }[] }
+        | { type: 'move'; moves: { fromPos: number; fromNote: number; toPos: number; toNote: number }[] };
+
+    let history: HistoryEntry[] = [];
+
     const cellKey = (d: number, n: number) => `${d}:${n}`;
     const cellHasNote = (d: number, n: number) => $data[id].notes.some(note => happensWithin(d, note.position) && note.note === n);
 
@@ -51,23 +58,31 @@
         if (!mouseIsDown) return;
 
         if (startDivision === divisionIndex && startNote === noteIndex) {
-            addNote(id, divisionToPosition(divisionIndex), noteIndex);
+            const position = divisionToPosition(divisionIndex);
+            addNote(id, position, noteIndex);
+            history = [...history, { type: 'add', position, note: noteIndex }];
             selectedNotes = new Set([cellKey(divisionIndex, noteIndex)]);
         } else {
             const dDiv = divisionIndex - startDivision;
             const dNote = noteIndex - startNote;
 
             if (selectedNotes.size > 0) {
+                const moves: HistoryEntry & { type: 'move' } = { type: 'move', moves: [] };
                 selectedNotes.forEach(key => {
                     const [d, n] = key.split(':').map(Number);
+                    moves.moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
                     moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
                 });
+                history = [...history, moves];
                 selectedNotes = new Set([...selectedNotes].map(key => {
                     const [d, n] = key.split(':').map(Number);
                     return cellKey(d + dDiv, n + dNote);
                 }));
             } else {
-                moveNote(id, divisionToPosition(startDivision), startNote, divisionToPosition(divisionIndex), noteIndex);
+                const fromPos = divisionToPosition(startDivision);
+                const toPos = divisionToPosition(divisionIndex);
+                moveNote(id, fromPos, startNote, toPos, noteIndex);
+                history = [...history, { type: 'move', moves: [{ fromPos, fromNote: startNote, toPos, toNote: noteIndex }] }];
             }
         }
 
@@ -104,6 +119,31 @@
     
     onMount(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (currentCell.division === -1 || currentCell.note === -1) return;
+
+            // cmd+z / ctrl+z: undo
+            if ((event.metaKey || event.ctrlKey) && event.key === "z") {
+                event.preventDefault();
+                const entry = history[history.length - 1];
+                if (!entry) return;
+                history = history.slice(0, -1);
+                selectedNotes = new Set();
+                if (entry.type === 'add') {
+                    removeNote(id, entry.position, entry.note);
+                } else if (entry.type === 'remove') {
+                    entry.entries.forEach(({ position, note, amp, duration }) => {
+                        addNote(id, position, note);
+                        updateNoteAmp(id, position, note, amp);
+                        updateNoteDuration(id, position, note, duration);
+                    });
+                } else if (entry.type === 'move') {
+                    entry.moves.forEach(({ fromPos, fromNote, toPos, toNote }) => {
+                        moveNote(id, toPos, toNote, fromPos, fromNote);
+                    });
+                }
+                return;
+            }
+
             // cmd+a / ctrl+a: select all notes
             if ((event.metaKey || event.ctrlKey) && event.key === "a") {
                 event.preventDefault();
@@ -118,18 +158,22 @@
                 return;
             }
 
-            if (currentCell.division === -1 || currentCell.note === -1) return;
-
             // if backspace or delete is pressed, remove all selected notes (or current cell if none selected)
             if (event.key === "Backspace" || event.key === "Delete") {
-                if (selectedNotes.size > 0) {
-                    selectedNotes.forEach(key => {
-                        const [d, n] = key.split(':').map(Number);
-                        removeNote(id, divisionToPosition(d), n);
-                    });
+                const toDelete = selectedNotes.size > 0
+                    ? [...selectedNotes].map(key => { const [d, n] = key.split(':').map(Number); return { d, n }; })
+                    : [{ d: currentCell.division, n: currentCell.note }];
+
+                const entries = toDelete.flatMap(({ d, n }) => {
+                    const position = divisionToPosition(d);
+                    const stored = $data[id].notes.find(note => happensWithin(d, note.position) && note.note === n);
+                    return stored ? [{ position, note: n, amp: stored.amp, duration: stored.duration }] : [];
+                });
+
+                if (entries.length) {
+                    history = [...history, { type: 'remove', entries }];
+                    entries.forEach(({ position, note }) => removeNote(id, position, note));
                     selectedNotes = new Set();
-                } else {
-                    removeNote(id, divisionToPosition(currentCell.division), currentCell.note);
                 }
             }
         };
