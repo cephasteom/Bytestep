@@ -24,7 +24,7 @@ export function isValidBytebeat(expr: string): boolean {
 export function evalBytebeat(expr: string, t: number, c: number): number {
     try {
         const fn = new Function('t', 'c', `return ${expr};`);
-        return fn(t, c);
+        return Math.floor(fn(t, c));
     } catch {
         return t; // fallback to a simple output
     }
