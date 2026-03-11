@@ -88,6 +88,16 @@
         currentCell = { division: divisionIndex, note: noteIndex };
     };
 
+    const handlePianoKeyClick = (noteIndex: number) => {
+        const newSelected = new Set<string>();
+        for (let d = 0; d < $divisions * $bars; d++) {
+            if ($data[id].notes.some(n => happensWithin(d, n.position) && n.note === noteIndex)) {
+                newSelected.add(cellKey(d, noteIndex));
+            }
+        }
+        selectedNotes = newSelected;
+    };
+
     $: collapsed = !$activeSequencers.includes(id);
     $: colour = `var(--theme-${(id % 5) + 1})`;
     $: minWidth = $bars * $divisions * 40 + "px";
@@ -151,11 +161,12 @@
     >
         <div class="sequencer__piano">
             {#each Array(notes) as _, noteIndex}
-                <div 
-                    class="sequencer__piano-key" 
+                <div
+                    class="sequencer__piano-key"
                     style="grid-row: {(notes - noteIndex) + 1};"
                     class:sequencer__piano-key--accidental={[1, 3, 6, 8, 10].includes(noteIndex % 12)}
                     class:sequencer__piano-key--active={noteIndex === currentNote}
+                    on:click={() => handlePianoKeyClick(noteIndex)}
                 >{!(noteIndex % 12) ? `C${Math.floor(noteIndex / 12)}` : ''}</div>
             {/each}
         </div>
@@ -242,6 +253,7 @@
                 justify-content: center;
                 font-size: 0.625rem;
                 color: white;
+                cursor: pointer;
                 
                 &--accidental {
                     background-color: var(--grey-darker);
