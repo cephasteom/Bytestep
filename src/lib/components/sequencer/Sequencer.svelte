@@ -104,6 +104,20 @@
     
     onMount(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            // cmd+a / ctrl+a: select all notes
+            if ((event.metaKey || event.ctrlKey) && event.key === "a") {
+                event.preventDefault();
+                selectedNotes = new Set(
+                    $data[id].notes.flatMap(n => {
+                        for (let d = 0; d < $divisions * $bars; d++) {
+                            if (happensWithin(d, n.position)) return [cellKey(d, n.note)];
+                        }
+                        return [];
+                    })
+                );
+                return;
+            }
+
             if (currentCell.division === -1 || currentCell.note === -1) return;
 
             // if backspace or delete is pressed, remove all selected notes (or current cell if none selected)
