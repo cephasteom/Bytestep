@@ -1,5 +1,5 @@
 export const preset = {
-    "numQubits": 4,
+    "numQubits": 6,
     "params": [],
     "options": {
         "params": {},
@@ -39,49 +39,256 @@ export const preset = {
     "gates": [
         [
             {
-                "id": "xTo0sc8VzShNfI2qyT",
+                "id": "hqeDBGBYrawjMQiOjP",
                 "name": "rx",
                 "connector": 0,
                 "options": {
+                    "creg": {},
                     "params": {
-                        "theta": 1.61
+                        "theta": 0.9424777960769379
                     }
                 }
-            }
-        ],
-        [
+            },
             {
-                "id": "fbXHiC39kLDlbr7ang",
-                "name": "ry",
+                "id": "eDqGgJ0Tv7GG8TIp8q",
+                "name": "cx",
                 "connector": 0,
                 "options": {
-                    "params": {
-                        "theta": 2.44
-                    }
+                    "creg": {},
+                    "params": {}
                 }
-            }
-        ],
-        [
+            },
+            null,
+            null,
             {
-                "id": "XEKLkbgiDixEIVJLdP",
-                "name": "rz",
+                "id": "Sc1xIXkSSFg7wmRJzP",
+                "name": "crx",
                 "connector": 0,
                 "options": {
+                    "creg": {},
                     "params": {
-                        "phi": 1.39
+                        "theta": 0.34010505347750125
                     }
+                }
+            },
+            {
+                "id": "A0Aazm6LxJrMj0SenD",
+                "name": "cx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            null,
+            null,
+            {
+                "id": "ObGplFd6fAaaBP3zS5",
+                "name": "crx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 2.4880838650109975
+                    }
+                }
+            },
+            {
+                "id": "dhgqo6aMDT5KpxOWQR",
+                "name": "cx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null,
+            {
+                "id": "BMSnnTHuoRbX7cElSQ",
+                "name": "crx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 1.8122957551672516
+                    }
+                }
+            },
+            {
+                "id": "ffGnwHXrWMTGF9mrS1",
+                "name": "cx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null
+        ],
+        [
+            {
+                "id": "XpiYpxlunJbPE8R5UQ",
+                "name": "x",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            {
+                "id": "eDqGgJ0Tv7GG8TIp8q",
+                "name": "cx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            {
+                "id": "ObGplFd6fAaaBP3zS5",
+                "name": "crx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 2.4880838650109975
+                    }
+                }
+            },
+            {
+                "id": "dhgqo6aMDT5KpxOWQR",
+                "name": "cx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null,
+            null,
+            null,
+            {
+                "id": "VuuqxlWEgwFrhgWzSq",
+                "name": "crx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 1.5546196235588141
+                    }
+                }
+            },
+            {
+                "id": "lCwAepl2L9M8tYDgLU",
+                "name": "cx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {}
                 }
             }
         ],
         [
+            null,
+            null,
+            null,
+            null,
             {
-                "id": "vUl3ujb6g3hq1mQr8p",
-                "name": "h",
+                "id": "Sc1xIXkSSFg7wmRJzP",
+                "name": "crx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 0.34010505347750125
+                    }
+                }
+            },
+            {
+                "id": "A0Aazm6LxJrMj0SenD",
+                "name": "cx",
                 "connector": 0,
-                "options": {}
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                "id": "BMSnnTHuoRbX7cElSQ",
+                "name": "crx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 1.8122957551672516
+                    }
+                }
+            },
+            {
+                "id": "ffGnwHXrWMTGF9mrS1",
+                "name": "cx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
+            },
+            null,
+            null
+        ],
+        [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                "id": "VuuqxlWEgwFrhgWzSq",
+                "name": "crx",
+                "connector": 1,
+                "options": {
+                    "creg": {},
+                    "params": {
+                        "theta": 1.5546196235588141
+                    }
+                }
+            },
+            {
+                "id": "lCwAepl2L9M8tYDgLU",
+                "name": "cx",
+                "connector": 0,
+                "options": {
+                    "creg": {},
+                    "params": {}
+                }
             }
         ]
     ],
     "customGates": {},
     "cregs": {}
 }
+

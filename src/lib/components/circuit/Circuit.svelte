@@ -2,7 +2,7 @@
 
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { circuit, gates, updateParams, circuitParams, type Gate, showQuantumActions } from '$lib/stores/circuit/circuit';
+    import { circuit, gates, updateParams, circuitParams, type Gate, showQuantumActions, persistCircuit } from '$lib/stores/circuit/circuit';
     import { areTouching, arraysAreEqual, clamp } from '$lib/utils';
     import { showSequencers } from '$lib/stores/sequencers';
     import { sonify } from '$lib/stores/sonification';
@@ -34,13 +34,15 @@
         return clamp(Math.floor((x - svg.x) / 75), 0, 24);
     }
 
-    const updateSVG = () => {
+    const updateCircuit = () => {
         svg = circuit.exportSVG(true)
         
         const gates = Array.from(thisSvg?.querySelectorAll(`[data-id]`) || []);
         gates.forEach(el => el.classList.remove('gate--selected'));
         const selectedGate = thisSvg?.querySelector(`[data-id="${selectedGateId}"]`);
         selectedGate && selectedGate.classList.toggle('gate--selected');
+
+        persistCircuit();
     };
 
     // handle dropping the gate onto the svg
@@ -64,7 +66,7 @@
             ? circuit.insertGate(gate.symbol, column, wires, options)
             : circuit.addGate(gate.symbol, column, wires, options);
         
-        updateSVG() 
+        updateCircuit() 
         updateParams()
 
         selectedGateId = ''
@@ -84,7 +86,7 @@
         const connector = wires.findIndex((w: number) => w === wire);
         selectedGateConnector = connector === -1 ? 0 : connector;
         
-        updateSVG();
+        updateCircuit();
     }
 
     // handle moving gates on the svg
@@ -112,7 +114,7 @@
         circuit.removeGate(selectedGateId);
         circuit.addGate(gate.name, column, wires, gate.options);
         
-        updateSVG();
+        updateCircuit();
         updateParams()
 
         selectedGateId = ''
@@ -121,23 +123,23 @@
     const clearCircuit = () => {
         circuit.clear()
         circuit.numQubits = 1
-        updateSVG()
+        updateCircuit()
         updateParams()
     };
 
     onMount(() => {        
-        updateSVG()
+        updateCircuit()
 
         const handleKeydown = (e: KeyboardEvent) => {
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 circuit.removeGate(selectedGateId);
-                updateSVG();
+                updateCircuit();
                 updateParams()
             }
         }
 
         window.addEventListener('keydown', handleKeydown);
-        const unsubscribeCircuitParams = circuitParams.subscribe(() => updateSVG());
+        const unsubscribeCircuitParams = circuitParams.subscribe(() => updateCircuit());
 
         return () => {
             window.removeEventListener('keydown', handleKeydown)
@@ -240,7 +242,7 @@
                                     [param.name]: value * Math.PI * (param.name === 'theta' ? 1 : 2)
                                 }
                             });
-                            updateSVG();
+                            updateCircuit();
                             updateParams(); // why does this reset it?
                         }}
                     />

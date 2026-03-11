@@ -12,8 +12,22 @@ showCircuit.subscribe(persist('bs.showCircuit'))
 export const showQuantumActions = writable<boolean>(false)
 
 export const circuit = new QuantumCircuit();
-circuit.load(preset);
+const saved = localStorage.getItem('bs.circuit')
+if(saved) {
+    try {
+        circuit.load(JSON.parse(saved))
+    } catch (e) {
+        console.error('Failed to load circuit from localStorage:', e)
+    }
+} else {
+    circuit.load(preset);
+}
 circuit.run()
+
+export const persistCircuit = () => {
+    const data = circuit.save()
+    localStorage.setItem('bs.circuit', JSON.stringify(data))
+}
 
 const symbols: { [key: string]: string } = {
     theta: 'θ',
