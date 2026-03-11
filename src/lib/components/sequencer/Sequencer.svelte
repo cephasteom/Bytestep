@@ -219,13 +219,13 @@
     >
         <div class="sequencer__piano">
             {#each Array(notes) as _, noteIndex}
-                <div
+                <button
                     class="sequencer__piano-key"
                     style="grid-row: {(notes - noteIndex) + 1};"
                     class:sequencer__piano-key--accidental={[1, 3, 6, 8, 10].includes(noteIndex % 12)}
                     class:sequencer__piano-key--active={noteIndex === currentNote}
                     on:click={() => handlePianoKeyClick(noteIndex)}
-                >{!(noteIndex % 12) ? `C${Math.floor(noteIndex / 12)}` : ''}</div>
+                >{!(noteIndex % 12) ? `C${Math.floor(noteIndex / 12)}` : ''}</button>
             {/each}
         </div>
         
@@ -302,6 +302,7 @@
             margin-top: -3px;
             
             &-key {
+                border: none;
                 background-color: var(--grey-lighter);
                 border-right: 3px solid var(--black-lighter);
                 box-sizing: border-box;
@@ -319,6 +320,10 @@
 
                 &--active {
                     background-color: rgba(255, 255, 255, 0.5);
+                }
+
+                &:focus {
+                    outline: none;
                 }
             }
         }
