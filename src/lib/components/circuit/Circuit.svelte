@@ -10,6 +10,7 @@
     import Tooltip from '$lib/components/Tooltip.svelte';
     import Button from '$lib/components/Button.svelte';
     import SVG from '$lib/components/SVG.svelte';
+    import Slider from '$lib/components/Slider.svelte';
 
     let svg: string = "";
     let thisSvg: HTMLDivElement;
@@ -223,20 +224,16 @@
                 {/each}
             </div>
             <div
-                class="circuit-designer__gate-angles"
+                class="circuit-designer__parameters"
             >
                 {#if gate && params?.length}
-                    <p>This gate accepts the following additional parameters:</p>
-                    {#each params as param}
-                        <p>{param.name}: {gate.options?.[param.name] ?? param.default}</p>
-                        <input 
-                            key={param.name}
-                            type="range" 
-                            min={0} 
-                            max={1} 
-                            step={0.01}
-                            value={gate.options?.[param.name] ?? param.default}
-                            on:input={(e) => {
+                    {#each params as param, i}
+                        <Slider 
+                            id={param.name} 
+                            min={0} max={1} step={0.01} value={gate.options?.[param.name] ?? param.default} 
+                            orientation="vertical"
+                            colour={i + 1} name={param.name} decimals={2}
+                            onChange={(e) => {
                                 // @ts-ignore
                                 const value = parseFloat(e.target.value);
                                 const { id, column } = gate;
@@ -325,6 +322,27 @@
             flex-wrap: wrap;
             gap: .5rem;
             width: 12rem;
+        }
+
+        &__parameters {
+            & > label {
+                color: white;
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            &-value {
+                &--theta {
+                    color: var(--theme-1);
+                }
+                &--phi {
+                    color: var(--theme-2);
+                }
+                &--lambda {
+                    color: var(--theme-3);
+                }
+            }
+
         }
 
         &__circuit {
