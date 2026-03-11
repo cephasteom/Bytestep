@@ -231,9 +231,7 @@
                         id={param.name} 
                         min={0} max={1} step={0.01} value={gate.options?.[param.name] ?? param.default} 
                         colour={i + 1} name={param.name} decimals={2}
-                        onChange={(e) => {
-                            // @ts-ignore
-                            const value = parseFloat(e.target.value);
+                        onChange={(value) => {
                             const { id, column } = gate;
                             circuit.gates.forEach((gates: any) => {
                                 if(id !== gates[column]?.id) return;

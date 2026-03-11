@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { debounce } from "$lib/utils";
+    import { throttle } from "$lib/utils";
 
     export let min: number = 0;
     export let max: number = 100;
@@ -22,7 +22,7 @@
     <span class="min">{min}</span>
     <input 
         type="range" id={id} min={min} max={max} step={step} bind:value={value} class={"colour" + colour} 
-        on:input={debounce(() => onChange(value), 100)}
+        on:input={throttle(() => onChange(value), 100)}
     />
     <span class="max">{max}</span>
 </div>
