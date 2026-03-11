@@ -13,11 +13,13 @@
     export let height: string = '1rem';
     export let focused: boolean = false;
     export let selected: boolean = false;
+    export let ghost: boolean = false;
+    export let dragging: boolean = false;
 
-    $: backgroundColor = on || active 
-        ? colour 
-        : (Math.floor(division / 4) % 2) 
-            ? 'var(--grey-lighter)' 
+    $: backgroundColor = on || active || ghost
+        ? colour
+        : (Math.floor(division / 4) % 2)
+            ? 'var(--grey-lighter)'
             : 'var(--grey-dark)';
 </script>
 
@@ -34,6 +36,8 @@
     class:mouseIsDown={mouseIsDown}
     class:cell--focused={focused}
     class:cell--selected={selected}
+    class:cell--ghost={ghost}
+    class:dragging={dragging}
     aria-label="Toggle note {note} at division {division + 1}"
     on:mouseover={handleMouseOver}
     on:mousedown={(e) => handleMouseDown(division, note, e)}
@@ -48,6 +52,10 @@
     box-sizing: border-box;
     background-color: transparent;
     cursor: pointer;
+
+    &.dragging {
+        cursor: move;
+    }
     padding: 0;
     position: relative;
     background-color: var(--grey-dark);
@@ -77,6 +85,11 @@
         z-index: 5;
         outline: 2px solid white;
         outline-offset: 2px;
+    }
+
+    &--ghost {
+        opacity: 0.5;
+        border-radius: 4px;
     }
 }
 </style>

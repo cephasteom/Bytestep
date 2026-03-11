@@ -15,6 +15,7 @@
     let startDivision = -1;
     let startNote = -1;
     let currentCell = {division: -1, note: -1};
+    let hoverDivision = -1;
     let scrollableDiv: HTMLDivElement;
     let selectedNotes = new Set<string>();
 
@@ -96,7 +97,15 @@
         startDivision = -1;
         startNote = -1;
         currentNote = -1;
+        hoverDivision = -1;
         mouseIsDown = false;
+    };
+
+    const handleGridMouseUp = (event: MouseEvent) => {
+        // only handle mouseup on the gap between cells (not bubbled from a cell)
+        if (event.target !== event.currentTarget) return;
+        if (!mouseIsDown || hoverDivision === -1) return;
+        handleMouseUp(hoverDivision, currentNote);
     };
 
     const handleMouseFocus = (divisionIndex: number, noteIndex: number) => {
@@ -116,6 +125,12 @@
     $: collapsed = !$activeSequencers.includes(id);
     $: colour = `var(--theme-${(id % 5) + 1})`;
     $: minWidth = $bars * $divisions * 40 + "px";
+    $: ghostCells = mouseIsDown && selectedNotes.size > 0 && hoverDivision !== -1
+        ? new Set([...selectedNotes].map(key => {
+            const [d, n] = key.split(':').map(Number);
+            return cellKey(d + (hoverDivision - startDivision), n + (currentNote - startNote));
+          }))
+        : new Set<string>();
     
     onMount(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -229,11 +244,13 @@
             {/each}
         </div>
         
-        <div 
+        <div
             class="sequencer__grid"
             role="application"
             on:mouseleave={handleMouseLeave}
+            on:mouseup={handleGridMouseUp}
             style="min-width: {minWidth};"
+            class:sequencer__grid--dragging={mouseIsDown && selectedNotes.size > 0}
         >
             {#each Array($divisions * $bars) as _, divisionIndex}
                 {#each Array(notes) as _, noteIndex}
@@ -245,12 +262,14 @@
                         focused={currentCell.division === divisionIndex && currentCell.note === noteIndex}
                         selected={selectedNotes.has(cellKey(divisionIndex, noteIndex))}
                         active={$sequencerTs[id] !== -1 && $sequencerTs[id] % ($divisions * $bars) === divisionIndex}
-                        handleMouseOver={() => currentNote = noteIndex}
+                        handleMouseOver={() => { currentNote = noteIndex; hoverDivision = divisionIndex; }}
                         handleMouseDown={handleMouseDown}
                         handleMouseUp={handleMouseUp}
                         handleMouseFocus={handleMouseFocus}
                         {mouseIsDown}
                         colour={colour}
+                        ghost={ghostCells.has(cellKey(divisionIndex, noteIndex))}
+                        dragging={mouseIsDown && selectedNotes.size > 0}
                     />
                 {/each}
             {/each}
@@ -334,6 +353,10 @@
             grid-template-rows: repeat(notes, .5fr);
             margin-top: -3px;
             position: relative;
+
+            &--dragging {
+                cursor: move;
+            }
         }
     }
 </style>
