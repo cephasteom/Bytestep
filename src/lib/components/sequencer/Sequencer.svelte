@@ -69,11 +69,13 @@
 
             if (selectedNotes.size > 0) {
                 const moves: HistoryEntry & { type: 'move' } = { type: 'move', moves: [] };
-                selectedNotes.forEach(key => {
-                    const [d, n] = key.split(':').map(Number);
-                    moves.moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
-                    moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
-                });
+                [...selectedNotes]
+                    .map(key => { const [d, n] = key.split(':').map(Number); return { d, n }; })
+                    .sort((a, b) => dDiv !== 0 ? (b.d - a.d) * dDiv : (b.n - a.n) * dNote)
+                    .forEach(({ d, n }) => {
+                        moves.moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
+                        moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
+                    });
                 history = [...history, moves];
                 selectedNotes = new Set([...selectedNotes].map(key => {
                     const [d, n] = key.split(':').map(Number);
@@ -170,6 +172,27 @@
                         return [];
                     })
                 );
+                return;
+            }
+
+            // arrow keys: move selected notes
+            if (selectedNotes.size > 0 && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+                event.preventDefault();
+                const dDiv = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+                const dNote = event.key === "ArrowUp" ? 1 : event.key === "ArrowDown" ? -1 : 0;
+                const sorted = [...selectedNotes]
+                    .map(key => { const [d, n] = key.split(':').map(Number); return { d, n }; })
+                    .sort((a, b) => dDiv !== 0 ? (b.d - a.d) * dDiv : (b.n - a.n) * dNote);
+                const moves: { fromPos: number; fromNote: number; toPos: number; toNote: number }[] = [];
+                sorted.forEach(({ d, n }) => {
+                    moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
+                    moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
+                });
+                history = [...history, { type: 'move', moves }];
+                selectedNotes = new Set([...selectedNotes].map(key => {
+                    const [d, n] = key.split(':').map(Number);
+                    return cellKey(d + dDiv, n + dNote);
+                }));
                 return;
             }
 
