@@ -5,13 +5,14 @@
     export let on: boolean = false;
     export let active: boolean = false;
     export let handleMouseOver: () => void = () => {};
-    export let handleMouseDown: (division: number, note: number) => void = () => {};
+    export let handleMouseDown: (division: number, note: number, event: MouseEvent) => void = () => {};
     export let handleMouseUp: (division: number, note: number) => void = () => {};
     export let handleMouseFocus: (division: number, note: number) => void = () => {};
     export let mouseIsDown: boolean = false;
     export let colour: string = 'var(--theme-1)';
     export let height: string = '1rem';
     export let focused: boolean = false;
+    export let selected: boolean = false;
 
     $: backgroundColor = on || active 
         ? colour 
@@ -32,9 +33,10 @@
     class:cell--on={on}
     class:mouseIsDown={mouseIsDown}
     class:cell--focused={focused}
+    class:cell--selected={selected}
     aria-label="Toggle note {note} at division {division + 1}"
     on:mouseover={handleMouseOver}
-    on:mousedown={() => handleMouseDown(division, note)}
+    on:mousedown={(e) => handleMouseDown(division, note, e)}
     on:mouseup={() => handleMouseUp(division, note)}
     on:focus={() => handleMouseFocus(division, note)}
 >
@@ -69,6 +71,12 @@
         z-index: 10;
         outline: 2px dashed white !important;
         outline-offset: 4px;
+    }
+
+    &--selected {
+        z-index: 5;
+        outline: 2px solid white;
+        outline-offset: 2px;
     }
 }
 </style>

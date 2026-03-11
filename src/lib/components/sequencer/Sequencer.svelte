@@ -16,18 +16,61 @@
     let startNote = -1;
     let currentCell = {division: -1, note: -1};
     let scrollableDiv: HTMLDivElement;
+    let selectedNotes = new Set<string>();
 
-    const handleMouseDown = (divisionIndex: number, noteIndex: number) => {
+    const cellKey = (d: number, n: number) => `${d}:${n}`;
+    const cellHasNote = (d: number, n: number) => $data[id].notes.some(note => happensWithin(d, note.position) && note.note === n);
+
+    const handleMouseDown = (divisionIndex: number, noteIndex: number, event: MouseEvent) => {
+        const key = cellKey(divisionIndex, noteIndex);
+        const hasNote = cellHasNote(divisionIndex, noteIndex);
+
+        if (event.shiftKey) {
+            if (hasNote) {
+                if (selectedNotes.has(key)) selectedNotes.delete(key);
+                else selectedNotes.add(key);
+                selectedNotes = selectedNotes;
+            }
+            return;
+        }
+
+        if (hasNote) {
+            if (!selectedNotes.has(key)) {
+                selectedNotes = new Set([key]);
+            }
+        } else {
+            selectedNotes = new Set();
+        }
+
         mouseIsDown = true;
         startDivision = divisionIndex;
         startNote = noteIndex;
     };
 
     const handleMouseUp = (divisionIndex: number, noteIndex: number) => {
-        startDivision === divisionIndex && startNote === noteIndex
-            ? addNote(id, divisionToPosition(divisionIndex), noteIndex)
-            : moveNote(id, divisionToPosition(startDivision), startNote, divisionToPosition(divisionIndex), noteIndex);
-        
+        if (!mouseIsDown) return;
+
+        if (startDivision === divisionIndex && startNote === noteIndex) {
+            addNote(id, divisionToPosition(divisionIndex), noteIndex);
+            selectedNotes = new Set([cellKey(divisionIndex, noteIndex)]);
+        } else {
+            const dDiv = divisionIndex - startDivision;
+            const dNote = noteIndex - startNote;
+
+            if (selectedNotes.size > 0) {
+                selectedNotes.forEach(key => {
+                    const [d, n] = key.split(':').map(Number);
+                    moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
+                });
+                selectedNotes = new Set([...selectedNotes].map(key => {
+                    const [d, n] = key.split(':').map(Number);
+                    return cellKey(d + dDiv, n + dNote);
+                }));
+            } else {
+                moveNote(id, divisionToPosition(startDivision), startNote, divisionToPosition(divisionIndex), noteIndex);
+            }
+        }
+
         startDivision = -1;
         startNote = -1;
         mouseIsDown = false;
@@ -53,9 +96,17 @@
         const handleKeyDown = (event: KeyboardEvent) => {
             if (currentCell.division === -1 || currentCell.note === -1) return;
 
-            // if backspace or delete is pressed, remove the note at the current cell
+            // if backspace or delete is pressed, remove all selected notes (or current cell if none selected)
             if (event.key === "Backspace" || event.key === "Delete") {
-                removeNote(id, divisionToPosition(currentCell.division), currentCell.note);
+                if (selectedNotes.size > 0) {
+                    selectedNotes.forEach(key => {
+                        const [d, n] = key.split(':').map(Number);
+                        removeNote(id, divisionToPosition(d), n);
+                    });
+                    selectedNotes = new Set();
+                } else {
+                    removeNote(id, divisionToPosition(currentCell.division), currentCell.note);
+                }
             }
         };
 
@@ -117,12 +168,13 @@
         >
             {#each Array($divisions * $bars) as _, divisionIndex}
                 {#each Array(notes) as _, noteIndex}
-                    <Cell 
+                    <Cell
                         division={divisionIndex}
                         note={noteIndex}
                         row={(notes - noteIndex) + 1}
-                        on={$data[id].notes.some(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)}  
-                        focused={currentCell.division === divisionIndex && currentCell.note === noteIndex} 
+                        on={$data[id].notes.some(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)}
+                        focused={currentCell.division === divisionIndex && currentCell.note === noteIndex}
+                        selected={selectedNotes.has(cellKey(divisionIndex, noteIndex))}
                         active={$sequencerTs[id] !== -1 && $sequencerTs[id] % ($divisions * $bars) === divisionIndex}
                         handleMouseOver={() => currentNote = noteIndex}
                         handleMouseDown={handleMouseDown}
@@ -136,7 +188,7 @@
         </div>
 
     </div>
-    {#if currentCell.division !== -1 && currentCell.note !== -1}
+    {#if selectedNotes.size === 1 && (currentCell.division !== -1 && currentCell.note !== -1)}
         <Meta 
             {id}
             amp={$data[id].notes.find(n => n.position === divisionToPosition(currentCell.division) && n.note === currentCell.note)?.amp || 0.75}
