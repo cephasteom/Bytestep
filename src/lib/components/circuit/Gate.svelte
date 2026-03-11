@@ -66,7 +66,7 @@
         font-size: 1.125rem;
         font-weight: bold;
         text-transform: uppercase;
-        width: calc((100% - 1rem)/3);
+        width: calc((100% - 1.5rem)/4);
 
         &:disabled {
             cursor: not-allowed;

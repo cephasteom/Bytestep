@@ -10,50 +10,36 @@
     export let name: string = "";
     export let onChange: (value: number) => void = () => {};
     export let decimals: number = 2;
-    export let orientation: "horizontal" | "vertical" = "horizontal";
 </script>
 
-<div class="slider" class:vertical={orientation === "vertical"}>
-    <div>
-        <label for={id}>{name}</label>
-        <span 
-            class="value"
-            style="color: var(--theme-{colour});"
-        >{value.toFixed(decimals)}</span>
-    </div>
+<div class="slider">
+    <label for={id}>{name}</label>
+    <span 
+        class="value"
+        style="color: var(--theme-{colour});"
+    >{value.toFixed(decimals)}</span>
 
-    <div>
-        <span class="min">{min}</span>
-        <input 
-            type="range" id={id} min={min} max={max} step={step} bind:value={value} class={"colour" + colour} 
-            on:input={debounce(() => onChange(value), 100)}
-        />
-        <span class="max">{max}</span>
-    </div>
+    <span class="min">{min}</span>
+    <input 
+        type="range" id={id} min={min} max={max} step={step} bind:value={value} class={"colour" + colour} 
+        on:input={debounce(() => onChange(value), 100)}
+    />
+    <span class="max">{max}</span>
 </div>
 
 <style lang="scss">
     .slider {
         display: flex;
+        gap : 1rem;
         width: 100%;
-
-        &.vertical {
-            flex-direction: column;
-            gap: .5rem;
-        }
-
-        & > div {
-            display: flex;
-            width: 100%;
-            gap: 1rem;
-        }
     }
     label, span {
         color: white;
     }
 
     .value {
-        width: 2.5rem;
+        width: 5rem;
+        
     }
     input {
         -webkit-appearance: none;

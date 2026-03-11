@@ -205,72 +205,69 @@
         </div>
     </header>
 
-    <div class="circuit-designer__ui">
-        <aside class="circuit-designer__palette">
-            <div 
-                class="circuit-designer__gates"
-            >
-                {#each $gates as gate, i}
-                    <GateButton 
-                        id={i}
-                        symbol={gate.symbol}
-                        mouseover={() => focusedGate = gate}
-                        mouseout={() => focusedGate = null}
-                        dragend={(data: { id: number, x: number, y: number }) => {
-                            const { id, x, y } = data;
-                            handleDragEnd(id, x, y)
+    <aside class="circuit-designer__palette">
+        <div 
+            class="circuit-designer__gates"
+        >
+            {#each $gates as gate, i}
+                <GateButton 
+                    id={i}
+                    symbol={gate.symbol}
+                    mouseover={() => focusedGate = gate}
+                    mouseout={() => focusedGate = null}
+                    dragend={(data: { id: number, x: number, y: number }) => {
+                        const { id, x, y } = data;
+                        handleDragEnd(id, x, y)
+                    }}
+                />
+            {/each}
+        </div>
+        <div
+            class="circuit-designer__parameters"
+        >
+            {#if gate && params?.length}
+                {#each params as param, i}
+                    <Slider 
+                        id={param.name} 
+                        min={0} max={1} step={0.01} value={gate.options?.[param.name] ?? param.default} 
+                        colour={i + 1} name={param.name} decimals={2}
+                        onChange={(e) => {
+                            // @ts-ignore
+                            const value = parseFloat(e.target.value);
+                            const { id, column } = gate;
+                            circuit.gates.forEach((gates: any) => {
+                                if(id !== gates[column]?.id) return;
+                                gates[column].options.params = {
+                                    ...gates[column].options.params,
+                                    [param.name]: value * Math.PI * (param.name === 'theta' ? 1 : 2)
+                                }
+                            });
+                            updateSVG();
+                            updateParams(); // why does this reset it?
                         }}
                     />
                 {/each}
-            </div>
-            <div
-                class="circuit-designer__parameters"
-            >
-                {#if gate && params?.length}
-                    {#each params as param, i}
-                        <Slider 
-                            id={param.name} 
-                            min={0} max={1} step={0.01} value={gate.options?.[param.name] ?? param.default} 
-                            orientation="vertical"
-                            colour={i + 1} name={param.name} decimals={2}
-                            onChange={(e) => {
-                                // @ts-ignore
-                                const value = parseFloat(e.target.value);
-                                const { id, column } = gate;
-                                circuit.gates.forEach((gates: any) => {
-                                    if(id !== gates[column]?.id) return;
-                                    gates[column].options.params = {
-                                        ...gates[column].options.params,
-                                        [param.name]: value * Math.PI * (param.name === 'theta' ? 1 : 2)
-                                    }
-                                });
-                                updateSVG();
-                                updateParams(); // why does this reset it?
-                            }}
-                        />
-                    {/each}
-                {/if}
-            </div>
-        </aside>
-
-        <div class="circuit-designer__circuit">
-            {#if svg}
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div 
-                    bind:this={thisSvg}
-                    class="circuit-designer__svg"
-                    class:circuit-designer__svg--moving={isMoving}
-                    on:mousedown={handleMouseDown}
-                    on:mouseover={handleMouseMove}
-                    on:mouseup={handleMouseUp}
-                    on:mouseleave={handleMouseUp}
-                >
-                    {@html svg}
-                </div>
             {/if}
         </div>
+    </aside>
+
+    <div class="circuit-designer__circuit">
+        {#if svg}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-mouse-events-have-key-events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div 
+                bind:this={thisSvg}
+                class="circuit-designer__svg"
+                class:circuit-designer__svg--moving={isMoving}
+                on:mousedown={handleMouseDown}
+                on:mouseover={handleMouseMove}
+                on:mouseup={handleMouseUp}
+                on:mouseleave={handleMouseUp}
+            >
+                {@html svg}
+            </div>
+        {/if}
     </div>
 
 </section>
@@ -300,12 +297,6 @@
             }
         }
 
-        &__ui {
-            display: flex;
-            gap: var(--spacer);
-            width: 100%;
-        }
-
         &__palette {
             display: flex;
             flex-direction: column;
@@ -321,10 +312,10 @@
             display: flex;
             flex-wrap: wrap;
             gap: .5rem;
-            width: 12rem;
         }
 
         &__parameters {
+            min-height: 2rem;
             & > label {
                 color: white;
                 display: flex;
@@ -342,7 +333,6 @@
                     color: var(--theme-3);
                 }
             }
-
         }
 
         &__circuit {
