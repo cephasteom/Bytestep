@@ -81,3 +81,12 @@ export const lerp = (value: number, [lo, hi]: [number, number]): number =>
 
 export const stretchIndex = (arr: number[], d: number, hits: number): number =>
     arr[Math.floor(d * arr.length / hits)];
+
+export const getDecimalPlaces = (value: number): number => {
+    const valueString = value.toString();
+    const decimalIndex = valueString.indexOf('.');
+    if (decimalIndex === -1) {
+        return 0;
+    }
+    return valueString.length - decimalIndex - 1;
+}

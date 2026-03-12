@@ -14,13 +14,13 @@
     <Slider 
         id={`sequencer-${id}-amp`} 
         min={0} max={1} value={amp} 
-        colour={id + 1} name="Amplitude" decimals={2}
+        colour={id + 1} name="Amplitude"
         onChange={onChangeAmp}
     />
     <Slider 
         id={`sequencer-${id}-dur`} 
         min={0.125} max={4} step={0.125} value={dur} 
-        colour={id + 1} name="Duration" decimals={3}
+        colour={id + 1} name="Duration"
         onChange={onChangeDur}
     />
 </aside>

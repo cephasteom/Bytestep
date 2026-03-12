@@ -19,7 +19,7 @@
     <div class="settings">
 
         <div class="settings__row">
-            <label class="settings__label">Strategy</label>
+            <h3>Mapping Strategy</h3>
             <div class="radio-group">
                 {#each ['replace', 'add'] as opt}
                     <label class="radio-pill" class:active={$strategy === opt}>
@@ -31,7 +31,7 @@
         </div>
 
         <div class="settings__row">
-            <label class="settings__label">Note</label>
+            <h3>Note</h3>
             <div class="settings__controls">
                 <div class="radio-group">
                     {#each mappingOptions as opt}
@@ -50,7 +50,7 @@
         </div>
 
         <div class="settings__row">
-            <label class="settings__label">Amp</label>
+            <h3>Amplitude</h3>
             <div class="settings__controls">
                 <div class="radio-group">
                     {#each mappingOptions as opt}
@@ -69,7 +69,7 @@
         </div>
 
         <div class="settings__row">
-            <label class="settings__label">Duration</label>
+            <h3>Duration</h3>
             <div class="settings__controls">
                 <div class="radio-group">
                     {#each mappingOptions as opt}
@@ -88,7 +88,7 @@
         </div>
 
         <div class="settings__row">
-            <label class="settings__label">Trigger</label>
+            <h3>Trigger</h3>
             <div class="settings__controls">
                 <div class="radio-group">
                     {#each mappingOptions as opt}
@@ -116,20 +116,9 @@
         gap: 1.25rem;
         min-width: min(80vw, 36rem);
 
-        &__row {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
-        &__label {
-            width: 5rem;
-            flex-shrink: 0;
-            padding-top: 0.35rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--grey-lighter);
+        h3 {
+            padding-bottom: .5rem;
+            border-bottom: 1px solid white;
         }
 
         &__controls {
@@ -143,16 +132,14 @@
     .radio-group {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.375rem;
+        gap: 1rem;
     }
 
     .radio-pill {
         display: flex;
         align-items: center;
-        padding: 0.2rem 0.6rem;
         border-radius: 999px;
         border: 1px solid var(--grey-darker);
-        font-size: 0.75rem;
         cursor: pointer;
         color: var(--grey-lighter);
         transition: border-color 0.1s, color 0.1s, background-color 0.1s;

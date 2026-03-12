@@ -232,7 +232,7 @@
                     <Slider 
                         id={param.name} 
                         min={0} max={1} step={0.01} value={gate.options?.[param.name] ?? param.default} 
-                        colour={i + 1} name={param.name} decimals={2}
+                        colour={i + 1} name={param.name}
                         onChange={(value) => {
                             const { id, column } = gate;
                             circuit.gates.forEach((gates: any) => {

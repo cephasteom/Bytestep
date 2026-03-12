@@ -1,23 +1,25 @@
 <script lang="ts">
-    import { throttle } from "$lib/utils";
+    import { throttle, getDecimalPlaces } from "$lib/utils";
 
     export let min: number = 0;
     export let max: number = 100;
-    export let step: number = 0.001;
+    export let step: number = 0.01;
     export let value: number = 50;
     export let id: string = "";
     export let colour: number = 1;
     export let name: string = "";
     export let onChange: (value: number) => void = () => {};
-    export let decimals: number = 2;
 </script>
 
 <div class="slider">
-    <label for={id}>{name}</label>
+    {#if name}
+        <label for={id}>{name}</label>
+    {/if}
     <span 
         class="value"
+        style:width={getDecimalPlaces(step) * 0.75 + 1.5 + "ch"}
         style="color: var(--theme-{colour});"
-    >{value.toFixed(decimals)}</span>
+    >{value.toFixed(getDecimalPlaces(step))}</span>
 
     <span class="min">{min}</span>
     <input 
@@ -37,10 +39,6 @@
         color: white;
     }
 
-    .value {
-        width: 5rem;
-        
-    }
     input {
         -webkit-appearance: none;
         appearance: none;
