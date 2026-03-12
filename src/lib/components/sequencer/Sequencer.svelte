@@ -407,7 +407,7 @@
 
             &::after {
                 content: '';
-                width: 2rem;
+                width: 4rem;
                 height: 3px;
                 border-radius: 2px;
                 background-color: var(--grey-lighter);
