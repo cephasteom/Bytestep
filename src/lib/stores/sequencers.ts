@@ -12,6 +12,9 @@ activeSequencers.subscribe(persist('bs.activeSequencers'));
 export const showSequencers = writable(true);
 showSequencers.subscribe(persist('bs.showSequencers'));
 
+export const sequencerHeights = writable<{ [sequencerIndex: number]: number }>({});
+sequencerHeights.subscribe(persist('bs.sequencerHeights'));
+
 export type Note = {
     position: number; // in cycles
     note: number;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { activeSequencers, updateNoteAmp, updateNoteDuration } from "$lib/stores/sequencers";
+    import { activeSequencers, sequencerHeights, updateNoteAmp, updateNoteDuration } from "$lib/stores/sequencers";
     import { sequencerTs } from '$lib/stores/transport';
     import { data, addNote, removeNote, moveNote, notes, happensWithin, divisionToPosition } from "$lib/stores/sequencers";
     import { createHistory, type HistoryEntry } from "./history";
@@ -126,7 +126,6 @@
     $: colour = `var(--theme-${(id % 5) + 1})`;
     $: minWidth = $bars * $divisions * 40 + "px";
 
-    let customHeight = 320;
     let resizing = false;
     let resizeStartY = 0;
     let resizeStartHeight = 0;
@@ -134,7 +133,7 @@
     const handleResizeStart = (e: MouseEvent) => {
         resizing = true;
         resizeStartY = e.clientY;
-        resizeStartHeight = customHeight;
+        resizeStartHeight = $sequencerHeights[id] || 320;
         e.preventDefault();
     };
 
@@ -234,7 +233,10 @@
 
         const handleResizeMove = (e: MouseEvent) => {
             if (!resizing) return;
-            customHeight = Math.max(120, resizeStartHeight + (e.clientY - resizeStartY));
+            sequencerHeights.update(heights => ({
+                ...heights,
+                [id]: Math.max(120, resizeStartHeight + (e.clientY - resizeStartY))
+            }));
         };
         const handleResizeEnd = () => { resizing = false; };
         window.addEventListener("mousemove", handleResizeMove);
@@ -267,7 +269,7 @@
     class="sequencer"
     class:sequencer--collapsed={collapsed}
     class:sequencer--resizing={resizing}
-    style="border-color: {colour}; height: {collapsed ? '60px' : customHeight + 'px'};"
+    style="border-color: {colour}; height: {collapsed ? '60px' : ($sequencerHeights[id] || 320) + 'px'};"
 >
     <Header {id} {colour} />
 

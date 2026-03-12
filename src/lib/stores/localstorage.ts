@@ -1,6 +1,6 @@
 import { WebMidi } from "webmidi";
 import { connections, midiSettingsActive } from "./midi";
-import { activeSequencers, data, globalBytebeat, showSequencers } from "./sequencers";
+import { activeSequencers, sequencerHeights, data, globalBytebeat, showSequencers } from "./sequencers";
 import { bpm, isMetronome } from "./transport";
 import { bars, sequencers, timeSignature } from ".";
 import { showCircuit } from "./circuit/circuit";
@@ -30,6 +30,10 @@ export const loadAllStoreData = () => {
     
     // populate sequencer data
     sequencers.update((n) => retrieve<number>('bs.sequencers', n));
+    sequencerHeights.update((heights) => ({
+        ...heights,
+        ...retrieve<{ [sequencerIndex: number]: number }>('bs.sequencerHeights', {})
+    }));
 
     data.update((d) => ({
         ...d,
