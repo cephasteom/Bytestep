@@ -240,10 +240,25 @@
         window.addEventListener("mousemove", handleResizeMove);
         window.addEventListener("mouseup", handleResizeEnd);
 
+        let hasScrolled = false;
+        const cancelActiveSequencerSubscription = activeSequencers.subscribe(ids => {
+            if (!scrollableDiv || hasScrolled) return;
+            if (!ids.includes(id)) return scrollableDiv.scrollTo({ top: 0 }); // scroll to top when deactivated
+
+            // scroll to highest note when activated
+            const highestNote = $data[id].notes.reduce((max, n) => n.note > max ? n.note : max, 0 );
+            scrollableDiv.scrollTo({
+                top: ((16 + 2) * (notes - highestNote)),
+            });
+
+            hasScrolled = true;
+        });
+
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("mousemove", handleResizeMove);
             window.removeEventListener("mouseup", handleResizeEnd);
+            cancelActiveSequencerSubscription();
         };
     });
 </script>
