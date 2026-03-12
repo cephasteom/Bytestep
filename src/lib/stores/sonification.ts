@@ -1,3 +1,10 @@
+/**
+ * This file contains the logic for sonifying the quantum circuit output.
+ * It generates note data based on the measurements, probabilities, and phases of the circuit,
+ * dependent on the user defined options for how to map these values to musical parameters like pitch, amplitude, duration, and trigger.
+ * It then populates the sequencers with the generated notes according to the selected strategy (replace or add).
+ */
+
 import { get } from "svelte/store";
 import { probabilities, phases, circuit } from "./circuit/circuit";
 import { data, type Note } from "./sequencers";
@@ -33,8 +40,8 @@ const defaults: SonificationOptions = {
 
 const generateNoteValues = (
     s: number,
-    hits: number,
-    divsCount: number,
+    bars: number,
+    divisions: number,
     measurements: number[][],
     pbs: number[],
     phs: number[],
@@ -44,8 +51,11 @@ const generateNoteValues = (
     const numQubits = measurements[0]?.length ?? 1;
     const si = s % numQubits;
     const notes: Note[] = [];
+    const hits = bars * divisions;
 
     for (let d = 0; d < hits; d++) {
+        
+        // determine whether to trigger a note based on the selected option
         let triggerValue: number;
         switch (options.trigger) {
             case 'constant':    triggerValue = 1; break;
@@ -55,8 +65,10 @@ const generateNoteValues = (
             case 'random':      triggerValue = Math.random(); break;
             default:            triggerValue = 1;
         }
+        // if the trigger value is outside the specified range, skip this hit
         if (triggerValue < triggerRange[0] || triggerValue > triggerRange[1]) continue;
 
+        // determine which note to play based on the selected option
         let note: number;
         switch (options.note) {
             case 'constant':    note = noteRange[0]; break;
@@ -67,6 +79,7 @@ const generateNoteValues = (
             default:            note = noteRange[0];
         }
 
+        // determine amplitude based on the selected option
         let amp: number;
         switch (options.amp) {
             case 'constant':    amp = ampRange[0]; break;
@@ -77,6 +90,7 @@ const generateNoteValues = (
             default:            amp = ampRange[0];
         }
 
+        // determine duration based on the selected option
         let duration: number;
         switch (options.duration) {
             case 'constant':    duration = durationRange[0]; break;
@@ -87,7 +101,8 @@ const generateNoteValues = (
             default:            duration = durationRange[0];
         }
 
-        notes.push({ position: d / divsCount, note, amp, duration });
+        // add the note to the array, with position determined by the current division
+        notes.push({ position: d / divisions, note, amp, duration });
     }
 
     return notes;
@@ -100,22 +115,24 @@ const generateNoteValues = (
 export const sonify = (options: SonificationOptions = {}) => {
     const opts = { ...defaults, ...options } as Required<SonificationOptions>;
 
-    const divsCount = get(divisions);
-    const hits = divsCount * get(bars);
+    const hits = get(divisions) * get(bars);
 
     const measurements: number[][] = Array.from({ length: hits }, () => {
         circuit.run();
         return circuit.measureAll();
     });
 
-    const [pbs, phs, totalSequencers] = [
+    const args = [
+        get(bars),
+        get(divisions),
+        measurements,
         get(probabilities),
         get(phases),
-        get(sequencers)
-    ];
+        opts as Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>
+    ]
 
     data.update(data => Object.fromEntries(
-        Array.from({ length: totalSequencers }, (_, s) => [
+        Array.from({ length: get(sequencers) }, (_, s) => [
             s,
             {
                 record: false,
@@ -123,7 +140,7 @@ export const sonify = (options: SonificationOptions = {}) => {
                 quantize: true,
                 notes: [
                     ...(opts.strategy === 'add' ? data[s]?.notes ?? [] : []),
-                    ...generateNoteValues(s, hits, divsCount, measurements, pbs, phs, opts as Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>),
+                    ...generateNoteValues(...[s, ...args] as Parameters<typeof generateNoteValues>),
                 ],
                 bytebeat: "t",
             }
