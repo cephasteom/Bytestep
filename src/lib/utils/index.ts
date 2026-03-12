@@ -72,3 +72,12 @@ export const arraysAreEqual = (array1: any[], array2: any[]) =>
 export function mapToRange(x: number, inMin: number, inMax: number, outMin: number, outMax: number)  {
     return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
+
+export const scaleToRange = (value: number, [lo, hi]: [number, number]): number =>
+    Math.round(lo + value * (hi - lo));
+
+export const lerp = (value: number, [lo, hi]: [number, number]): number =>
+    lo + value * (hi - lo);
+
+export const stretchIndex = (arr: number[], d: number, hits: number): number =>
+    arr[Math.floor(d * arr.length / hits)];
