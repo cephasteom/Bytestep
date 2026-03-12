@@ -2,6 +2,7 @@
     import { activeSequencers, updateNoteAmp, updateNoteDuration } from "$lib/stores/sequencers";
     import { sequencerTs } from '$lib/stores/transport';
     import { data, addNote, removeNote, moveNote, notes, happensWithin, divisionToPosition } from "$lib/stores/sequencers";
+    import { createHistory, type HistoryEntry } from "./history";
     import { bars, divisions } from "$lib/stores/";
     import Cell from "./Cell.svelte";
     import { onMount } from "svelte";
@@ -19,12 +20,7 @@
     let scrollableDiv: HTMLDivElement;
     let selectedNotes = new Set<string>();
 
-    type HistoryEntry =
-        | { type: 'add'; position: number; note: number }
-        | { type: 'remove'; entries: { position: number; note: number; amp: number; duration: number }[] }
-        | { type: 'move'; moves: { fromPos: number; fromNote: number; toPos: number; toNote: number }[] };
-
-    let history: HistoryEntry[] = [];
+    const history = createHistory(id);
 
     const cellKey = (d: number, n: number) => `${d}:${n}`;
     const cellHasNote = (d: number, n: number) => $data[id].notes.some(note => happensWithin(d, note.position) && note.note === n);
@@ -61,7 +57,7 @@
         if (startDivision === divisionIndex && startNote === noteIndex) {
             const position = divisionToPosition(divisionIndex);
             addNote(id, position, noteIndex);
-            history = [...history, { type: 'add', position, note: noteIndex }];
+            history.push({ type: 'add', position, note: noteIndex });
             selectedNotes = new Set([cellKey(divisionIndex, noteIndex)]);
         } else {
             const dDiv = divisionIndex - startDivision;
@@ -76,7 +72,7 @@
                         moves.moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
                         moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
                     });
-                history = [...history, moves];
+                history.push(moves);
                 selectedNotes = new Set([...selectedNotes].map(key => {
                     const [d, n] = key.split(':').map(Number);
                     return cellKey(d + dDiv, n + dNote);
@@ -85,7 +81,7 @@
                 const fromPos = divisionToPosition(startDivision);
                 const toPos = divisionToPosition(divisionIndex);
                 moveNote(id, fromPos, startNote, toPos, noteIndex);
-                history = [...history, { type: 'move', moves: [{ fromPos, fromNote: startNote, toPos, toNote: noteIndex }] }];
+                history.push({ type: 'move', moves: [{ fromPos, fromNote: startNote, toPos, toNote: noteIndex }] });
             }
         }
 
@@ -173,23 +169,7 @@
             // cmd+z / ctrl+z: undo
             if ((event.metaKey || event.ctrlKey) && event.key === "z") {
                 event.preventDefault();
-                const entry = history[history.length - 1];
-                if (!entry) return;
-                history = history.slice(0, -1);
-                selectedNotes = new Set();
-                if (entry.type === 'add') {
-                    removeNote(id, entry.position, entry.note);
-                } else if (entry.type === 'remove') {
-                    entry.entries.forEach(({ position, note, amp, duration }) => {
-                        addNote(id, position, note);
-                        updateNoteAmp(id, position, note, amp);
-                        updateNoteDuration(id, position, note, duration);
-                    });
-                } else if (entry.type === 'move') {
-                    entry.moves.forEach(({ fromPos, fromNote, toPos, toNote }) => {
-                        moveNote(id, toPos, toNote, fromPos, fromNote);
-                    });
-                }
+                if (history.undo()) selectedNotes = new Set();
                 return;
             }
 
@@ -222,7 +202,7 @@
                     moves.push({ fromPos: divisionToPosition(d), fromNote: n, toPos: divisionToPosition(d + dDiv), toNote: n + dNote });
                     moveNote(id, divisionToPosition(d), n, divisionToPosition(d + dDiv), n + dNote);
                 });
-                history = [...history, { type: 'move', moves }];
+                history.push({ type: 'move', moves });
                 selectedNotes = new Set([...selectedNotes].map(key => {
                     const [d, n] = key.split(':').map(Number);
                     return cellKey(d + dDiv, n + dNote);
@@ -243,7 +223,7 @@
                 });
 
                 if (entries.length) {
-                    history = [...history, { type: 'remove', entries }];
+                    history.push({ type: 'remove', entries });
                     entries.forEach(({ position, note }) => removeNote(id, position, note));
                     selectedNotes = new Set();
                 }
@@ -260,25 +240,10 @@
         window.addEventListener("mousemove", handleResizeMove);
         window.addEventListener("mouseup", handleResizeEnd);
 
-        let hasScrolled = false;
-        const cancelActiveSequencerSubscription = activeSequencers.subscribe(ids => {
-            if (!scrollableDiv || hasScrolled) return;
-            if (!ids.includes(id)) return scrollableDiv.scrollTo({ top: 0 }); // scroll to top when deactivated
-
-            // scroll to highest note when activated
-            const highestNote = $data[id].notes.reduce((max, n) => n.note > max ? n.note : max, 0 );
-            scrollableDiv.scrollTo({
-                top: ((16 + 2) * (notes - highestNote)),
-            });
-
-            hasScrolled = true;
-        });
-
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("mousemove", handleResizeMove);
             window.removeEventListener("mouseup", handleResizeEnd);
-            cancelActiveSequencerSubscription();
         };
     });
 </script>
