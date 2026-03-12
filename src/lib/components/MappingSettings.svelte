@@ -1,11 +1,20 @@
 <script lang="ts">
     import { showMappingSettings } from '$lib/stores/circuit/circuit';
-    import { strategy, note, noteRange, amp, ampRange, duration, durationRange, trigger, triggerRange } from '$lib/stores/sonification';
+    import { strategy, note, noteRange, noteQuantizeRoot, noteQuantizeMode, amp, ampRange, duration, durationRange, trigger, triggerRange } from '$lib/stores/sonification';
     import Dialog from '$lib/components/Dialog.svelte';
     import RangeSlider from '$lib/components/RangeSlider.svelte';
     import Slider from '$lib/components/Slider.svelte';
+    import Select from '$lib/components/Select.svelte';
+    import { scales } from '$lib/stores/scales';
 
     const mappingOptions = ['constant', 'measure', 'probability', 'phase', 'random'] as const;
+
+    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const rootOptions = noteNames.map((name, i) => ({ label: name, value: i }));
+    const scaleOptions = [
+        { label: '', value: null },
+        ...Object.keys(scales).map(name => ({ label: name, value: name }))
+    ];
 
     const ranges = {
         note:     { min: 0, max: 127, step: 1 },
@@ -48,6 +57,30 @@
                 {/if}
             </div>
         </div>
+
+        {#if $note !== 'constant'}
+            <div class="settings__row">
+                <h3>Quantize Notes</h3>
+                <div class="settings__selects">
+                    <Select
+                        id="quantize-mode"
+                        label="Scale"
+                        value={$noteQuantizeMode}
+                        options={scaleOptions}
+                        onChange={v => noteQuantizeMode.set(v as string | null)}
+                    />
+                    {#if $noteQuantizeMode !== null}
+                        <Select
+                            id="quantize-root"
+                            label="Root"
+                            value={$noteQuantizeRoot}
+                            options={rootOptions}
+                            onChange={v => noteQuantizeRoot.set(Number(v))}
+                        />
+                    {/if}
+                </div>
+            </div>
+        {/if}
 
         <div class="settings__row">
             <h3>Amplitude</h3>
@@ -120,6 +153,12 @@
         h3 {
             padding-bottom: .5rem;
             border-bottom: 1px solid white;
+        }
+
+        &__selects {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
         }
 
         &__controls {

@@ -39,6 +39,7 @@
         color: white;
         padding: 0;
         max-width: min(90vw, 40rem);
+        max-height: 90vh;
         
 
         & > header {

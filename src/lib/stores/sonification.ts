@@ -10,13 +10,15 @@ import { data, type Note } from "./sequencers";
 import { sequencers, divisions, bars } from "./";
 import { scaleToRange, lerp, stretchIndex } from "$lib/utils";
 import { persist } from "./localstorage";
+import { scales } from "./scales";
 
 type MappingOption = 'measure' | 'probability' | 'phase' | 'random' | 'constant'
 export type SonificationOptions = {
     strategy?: 'replace' | 'add', // replace existing notes, add to what's already there
     note?: MappingOption, // how to determine the pitch of the note
     noteRange?: [number, number], // range to scale pitch by - 0 - 127 for MIDI
-    noteQuantize?: number, // quantize pitch to this many steps
+    noteQuantizeRoot?: number,       // root note 0–11 (C=0) for scale quantization
+    noteQuantizeMode?: string | null, // scale name from scales.ts, null = no quantize
     amp?: MappingOption, // how to determine the amplitude of the note
     ampRange?: [number, number], // range to scale amplitude by - 0 - 1 for MIDI velocity
     duration?: MappingOption, // how to determine the duration of the note
@@ -27,9 +29,10 @@ export type SonificationOptions = {
 
 export const defaults: SonificationOptions = {
     strategy: 'replace',
-    note: 'constant',
+    note: 'random',
     noteRange: [48, 72],
-    noteQuantize: 1,
+    noteQuantizeRoot: 2,
+    noteQuantizeMode: 'Dorian',
     amp: 'measure',
     ampRange: [0.5, 1],
     duration: 'constant',
@@ -44,8 +47,10 @@ export const note = writable<SonificationOptions['note']>(defaults.note)
 note.subscribe(persist('bs.sonify.note'));    
 export const noteRange = writable<SonificationOptions['noteRange']>(defaults.noteRange)
 noteRange.subscribe(persist('bs.sonify.noteRange'));
-export const noteQuantize = writable<SonificationOptions['noteQuantize']>(defaults.noteQuantize)
-noteQuantize.subscribe(persist('bs.sonify.noteQuantize'));
+export const noteQuantizeRoot = writable<number>(defaults.noteQuantizeRoot!)
+noteQuantizeRoot.subscribe(persist('bs.sonify.noteQuantizeRoot'));
+export const noteQuantizeMode = writable<string | null>(defaults.noteQuantizeMode!)
+noteQuantizeMode.subscribe(persist('bs.sonify.noteQuantizeMode'));
 export const amp = writable<SonificationOptions['amp']>(defaults.amp)
 amp.subscribe(persist('bs.sonify.amp'));
 export const ampRange = writable<SonificationOptions['ampRange']>(defaults.ampRange)
@@ -59,6 +64,24 @@ trigger.subscribe(persist('bs.sonify.trigger'));
 export const triggerRange = writable<SonificationOptions['triggerRange']>(defaults.triggerRange)
 triggerRange.subscribe(persist('bs.sonify.triggerRange'));
 
+/**
+ * Snap a note to the nearest pitch in a scale, transposed to root, then clamp to noteRange.
+ * Checks the current octave plus adjacent octaves to handle boundary wrapping.
+ */
+const quantizeNote = (n: number, root: number, scale: number[], noteRange: [number, number]): number => {
+    const octave = Math.floor((n - root) / 12);
+    let best = n;
+    let bestDist = Infinity;
+    for (const octOffset of [-1, 0, 1]) {
+        for (const degree of scale) {
+            const candidate = root + (octave + octOffset) * 12 + degree;
+            const dist = Math.abs(candidate - n);
+            if (dist < bestDist) { bestDist = dist; best = candidate; }
+        }
+    }
+    return Math.max(noteRange[0], Math.min(noteRange[1], best));
+};
+
 const generateNoteValues = (
     s: number,
     bars: number,
@@ -66,9 +89,10 @@ const generateNoteValues = (
     measurements: number[][],
     pbs: number[],
     phs: number[],
-    options: Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>
+    options: Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'noteQuantizeRoot' | 'noteQuantizeMode' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>
 ): Note[] => {
     const { noteRange, ampRange, durationRange, triggerRange } = options;
+    const quantizeScale = options.noteQuantizeMode ? scales[options.noteQuantizeMode] : null;
     const numQubits = measurements[0]?.length ?? 1;
     const si = s % numQubits;
     const notes: Note[] = [];
@@ -99,6 +123,7 @@ const generateNoteValues = (
             case 'random':      note = scaleToRange(Math.random(), noteRange); break;
             default:            note = noteRange[0];
         }
+        if (quantizeScale) note = quantizeNote(note, options.noteQuantizeRoot, quantizeScale, noteRange);
 
         // determine amplitude based on the selected option
         let amp: number;
@@ -137,7 +162,8 @@ export const sonify = () => {
         strategy:      get(strategy)      ?? defaults.strategy!,
         note:          get(note)          ?? defaults.note!,
         noteRange:     get(noteRange)     ?? defaults.noteRange!,
-        noteQuantize:  get(noteQuantize)  ?? defaults.noteQuantize!,
+        noteQuantizeRoot: get(noteQuantizeRoot) ?? defaults.noteQuantizeRoot!,
+        noteQuantizeMode: get(noteQuantizeMode) ?? defaults.noteQuantizeMode!,
         amp:           get(amp)           ?? defaults.amp!,
         ampRange:      get(ampRange)      ?? defaults.ampRange!,
         duration:      get(duration)      ?? defaults.duration!,
@@ -159,7 +185,7 @@ export const sonify = () => {
         measurements,
         get(probabilities),
         get(phases),
-        opts as Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>
+        opts as Required<Pick<SonificationOptions, 'note' | 'noteRange' | 'noteQuantizeRoot' | 'noteQuantizeMode' | 'amp' | 'ampRange' | 'duration' | 'durationRange' | 'trigger' | 'triggerRange'>>
     ]
 
     data.update(data => Object.fromEntries(
