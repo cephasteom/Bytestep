@@ -363,6 +363,7 @@
         transition: height 0.2s ease;
         overflow: scroll;
         position: relative;
+        flex-shrink: 0;
 
         &--collapsed {
             overflow: hidden;

@@ -282,6 +282,8 @@
         overflow: hidden;
         padding: 1rem var(--spacer) var(--spacer);
         border: 1.5px solid var(--theme-5);
+        height: 100%;
+        box-sizing: border-box;
 
         &__header {
             display: flex;
@@ -304,7 +306,8 @@
         }
 
         &__circuit {
-            height: 100%;
+            flex: 1;
+            min-height: 0;
             overflow: scroll;
         }
 
@@ -338,6 +341,7 @@
         &__circuit {
             width: 100%;
         }
+
         
         &__svg {
             height: 100%;

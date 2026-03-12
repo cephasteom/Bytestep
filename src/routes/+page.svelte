@@ -60,7 +60,7 @@
     .app {
         width: 100%;
         height: calc(100vh - var(--header-height));
-        overflow: scroll;
+        overflow: hidden;
         padding: var(--spacer);
         display: flex;
         flex-direction: column;
@@ -71,7 +71,8 @@
         &__lower {
             display: flex;
             gap: var(--spacer);
-            // min-height: calc(100% - 6rem);
+            flex: 1;
+            min-height: 0;
         }
     }
 </style>

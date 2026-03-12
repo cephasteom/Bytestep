@@ -4,7 +4,6 @@
  * dependent on the user defined options for how to map these values to musical parameters like pitch, amplitude, duration, and trigger.
  * It then populates the sequencers with the generated notes according to the selected strategy (replace or add).
  */
-
 import { get } from "svelte/store";
 import { probabilities, phases, circuit } from "./circuit/circuit";
 import { data, type Note } from "./sequencers";

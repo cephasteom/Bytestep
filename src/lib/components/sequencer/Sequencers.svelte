@@ -40,6 +40,8 @@
         display: flex;
         flex-direction: column;
         gap: var(--spacer);
+        height: 100%;
+        overflow-y: auto;
 
         &__buttons {
             display: flex;
