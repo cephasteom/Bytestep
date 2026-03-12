@@ -4,6 +4,7 @@ import { activeSequencers, sequencerHeights, data, globalBytebeat, showSequencer
 import { bpm, isMetronome } from "./transport";
 import { bars, sequencers, timeSignature } from ".";
 import { showCircuit } from "./circuit/circuit";
+import { strategy, note, noteRange, noteQuantize, amp, ampRange, duration, durationRange, trigger, triggerRange, defaults, type SonificationOptions } from "./sonification";
 
 /**
  * Load all store data from localStorage
@@ -46,7 +47,19 @@ export const loadAllStoreData = () => {
     bpm.set(retrieve<number>('bs.bpm', 120));
     bars.set(retrieve<number>('bs.bars', 4));
     timeSignature.set(retrieve<number>('bs.timeSignature', 4));
-    
+
+    // populate sonification data
+    strategy.set(retrieve<SonificationOptions['strategy']>('bs.sonify.strategy', defaults.strategy));
+    note.set(retrieve<SonificationOptions['note']>('bs.sonify.note', defaults.note));
+    noteRange.set(retrieve<SonificationOptions['noteRange']>('bs.sonify.noteRange', defaults.noteRange));
+    noteQuantize.set(retrieve<SonificationOptions['noteQuantize']>('bs.sonify.noteQuantize', defaults.noteQuantize));
+    amp.set(retrieve<SonificationOptions['amp']>('bs.sonify.amp', defaults.amp));
+    ampRange.set(retrieve<SonificationOptions['ampRange']>('bs.sonify.ampRange', defaults.ampRange));
+    duration.set(retrieve<SonificationOptions['duration']>('bs.sonify.duration', defaults.duration));
+    durationRange.set(retrieve<SonificationOptions['durationRange']>('bs.sonify.durationRange', defaults.durationRange));
+    trigger.set(retrieve<SonificationOptions['trigger']>('bs.sonify.trigger', defaults.trigger));
+    triggerRange.set(retrieve<SonificationOptions['triggerRange']>('bs.sonify.triggerRange', defaults.triggerRange));
+
 }
 
 /**

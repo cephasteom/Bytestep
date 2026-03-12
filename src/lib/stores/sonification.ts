@@ -9,9 +9,10 @@ import { probabilities, phases, circuit } from "./circuit/circuit";
 import { data, type Note } from "./sequencers";
 import { sequencers, divisions, bars } from "./";
 import { scaleToRange, lerp, stretchIndex } from "$lib/utils";
+import { persist } from "./localstorage";
 
 type MappingOption = 'measure' | 'probability' | 'phase' | 'random' | 'constant'
-type SonificationOptions = {
+export type SonificationOptions = {
     strategy?: 'replace' | 'add', // replace existing notes, add to what's already there
     note?: MappingOption, // how to determine the pitch of the note
     noteRange?: [number, number], // range to scale pitch by - 0 - 127 for MIDI
@@ -24,29 +25,39 @@ type SonificationOptions = {
     triggerRange?: [number, number], // hits with trigger value outside this range are dropped
 }
 
-const defaults: SonificationOptions = {
+export const defaults: SonificationOptions = {
     strategy: 'replace',
     note: 'constant',
     noteRange: [48, 72],
     noteQuantize: 1,
     amp: 'measure',
-    ampRange: [0, 1],
+    ampRange: [0.5, 1],
     duration: 'constant',
-    durationRange: [0.1, 1],
+    durationRange: [0.25, 2],
     trigger: 'measure',
     triggerRange: [0.5, 1],
 }
 
 export const strategy = writable<SonificationOptions['strategy']>(defaults.strategy)
+strategy.subscribe(persist('bs.sonify.strategy'));
 export const note = writable<SonificationOptions['note']>(defaults.note)
+note.subscribe(persist('bs.sonify.note'));    
 export const noteRange = writable<SonificationOptions['noteRange']>(defaults.noteRange)
+noteRange.subscribe(persist('bs.sonify.noteRange'));
 export const noteQuantize = writable<SonificationOptions['noteQuantize']>(defaults.noteQuantize)
+noteQuantize.subscribe(persist('bs.sonify.noteQuantize'));
 export const amp = writable<SonificationOptions['amp']>(defaults.amp)
+amp.subscribe(persist('bs.sonify.amp'));
 export const ampRange = writable<SonificationOptions['ampRange']>(defaults.ampRange)
+ampRange.subscribe(persist('bs.sonify.ampRange'));
 export const duration = writable<SonificationOptions['duration']>(defaults.duration)
+duration.subscribe(persist('bs.sonify.duration'));
 export const durationRange = writable<SonificationOptions['durationRange']>(defaults.durationRange)
+durationRange.subscribe(persist('bs.sonify.durationRange'));
 export const trigger = writable<SonificationOptions['trigger']>(defaults.trigger)
+trigger.subscribe(persist('bs.sonify.trigger'));
 export const triggerRange = writable<SonificationOptions['triggerRange']>(defaults.triggerRange)
+triggerRange.subscribe(persist('bs.sonify.triggerRange'));
 
 const generateNoteValues = (
     s: number,
@@ -120,10 +131,20 @@ const generateNoteValues = (
 
 /**
  * Using the quantum circuit output, generate notes and populate the sequencers.
- * @param options
  */
-export const sonify = (options: SonificationOptions = {}) => {
-    const opts = { ...defaults, ...options } as Required<SonificationOptions>;
+export const sonify = () => {
+    const opts: Required<SonificationOptions> = {
+        strategy:      get(strategy)      ?? defaults.strategy!,
+        note:          get(note)          ?? defaults.note!,
+        noteRange:     get(noteRange)     ?? defaults.noteRange!,
+        noteQuantize:  get(noteQuantize)  ?? defaults.noteQuantize!,
+        amp:           get(amp)           ?? defaults.amp!,
+        ampRange:      get(ampRange)      ?? defaults.ampRange!,
+        duration:      get(duration)      ?? defaults.duration!,
+        durationRange: get(durationRange) ?? defaults.durationRange!,
+        trigger:       get(trigger)       ?? defaults.trigger!,
+        triggerRange:  get(triggerRange)  ?? defaults.triggerRange!,
+    };
 
     const hits = get(divisions) * get(bars);
 
