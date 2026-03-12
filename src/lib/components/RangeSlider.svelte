@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { getDecimalPlaces } from "$lib/utils";
+
     export let min: number = 0;
     export let max: number = 1;
     export let step: number = 0.01;
@@ -21,7 +23,7 @@
 </script>
 
 <div class="range-slider" style="--lo: {loPercent}%; --hi: {hiPercent}%;">
-    <span class="bound">{lo.toFixed(step < 1 ? 2 : 0)}</span>
+    <span class="bound">{lo.toFixed(getDecimalPlaces(step))}</span>
     <div class="track-wrap">
         <div class="track">
             <div class="fill"></div>
@@ -29,21 +31,20 @@
         <input type="range" {min} {max} {step} value={lo} on:input={updateLo} />
         <input type="range" {min} {max} {step} value={hi} on:input={updateHi} />
     </div>
-    <span class="bound">{hi.toFixed(step < 1 ? 2 : 0)}</span>
+    <span class="bound">{hi.toFixed(getDecimalPlaces(step))}</span>
 </div>
 
 <style lang="scss">
     .range-slider {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 1rem;
         width: 100%;
+        border-radius: 2px;
     }
 
     .bound {
-        font-size: 0.75rem;
-        color: var(--grey-lighter);
-        width: 2.5rem;
+        color: white;
         flex-shrink: 0;
         text-align: center;
     }
@@ -60,7 +61,7 @@
         position: absolute;
         width: 100%;
         height: 3px;
-        background: var(--grey-darker);
+        background: var(--grey-lighter);
         border-radius: 2px;
 
         .fill {
@@ -68,7 +69,7 @@
             left: var(--lo);
             right: calc(100% - var(--hi));
             height: 100%;
-            background: white;
+            background: var(--theme-1);
             border-radius: 2px;
         }
     }
@@ -82,12 +83,13 @@
         pointer-events: none;
         height: 100%;
         margin: 0;
+        border-radius: 2px;
 
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
             pointer-events: all;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: white;
             cursor: pointer;
@@ -96,8 +98,8 @@
 
         &::-moz-range-thumb {
             pointer-events: all;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: white;
             cursor: pointer;

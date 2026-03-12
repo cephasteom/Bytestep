@@ -3,6 +3,7 @@
 
     export let min: number = 0;
     export let max: number = 100;
+    export let showMinMax: boolean = true;
     export let step: number = 0.01;
     export let value: number = 50;
     export let id: string = "";
@@ -21,12 +22,16 @@
         style="color: var(--theme-{colour});"
     >{value.toFixed(getDecimalPlaces(step))}</span>
 
-    <span class="min">{min}</span>
+    {#if showMinMax}
+        <span class="min">{min}</span>
+    {/if}
     <input 
         type="range" id={id} min={min} max={max} step={step} bind:value={value} class={"colour" + colour} 
         on:input={throttle(() => onChange(value), 10)}
     />
-    <span class="max">{max}</span>
+    {#if showMinMax}
+        <span class="max">{max}</span>
+    {/if}
 </div>
 
 <style lang="scss">

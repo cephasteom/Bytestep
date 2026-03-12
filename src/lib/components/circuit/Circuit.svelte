@@ -368,12 +368,15 @@
             fill: white!important;
             stroke: white!important;
             user-select: none;
+            cursor: grab;
             font-size: 1rem;
         }
         :global(.qc-circuit ellipse),
         :global(.qc-circuit circle) {
             fill: transparent!important;
             stroke: white!important;
+            cursor: grab;
+            
         }
         :global(.qc-circuit rect), 
         :global(.qc-circuit path) {

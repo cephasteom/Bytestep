@@ -42,7 +42,7 @@
                     {/each}
                 </div>
                 {#if $note === 'constant'}
-                    <Slider id="note" name="" {...ranges.note} value={$noteRange?.[0] ?? 48} onChange={v => noteRange.set([v, ranges.note.max])} />
+                    <Slider id="note" showMinMax={false} {...ranges.note} value={$noteRange?.[0] ?? 48} onChange={v => noteRange.set([v, ranges.note.max])} />
                 {:else}
                     <RangeSlider {...ranges.note} value={$noteRange ?? [48, 72]} onChange={v => noteRange.set(v)} />
                 {/if}
@@ -61,7 +61,7 @@
                     {/each}
                 </div>
                 {#if $amp === 'constant'}
-                    <Slider id="amp" name="" {...ranges.amp} value={$ampRange?.[0] ?? 0} onChange={v => ampRange.set([v, ranges.amp.max])} />
+                    <Slider id="amp" showMinMax={false} {...ranges.amp} value={$ampRange?.[0] ?? 0} onChange={v => ampRange.set([v, ranges.amp.max])} />
                 {:else}
                     <RangeSlider {...ranges.amp} value={$ampRange ?? [0, 1]} onChange={v => ampRange.set(v)} />
                 {/if}
@@ -80,7 +80,7 @@
                     {/each}
                 </div>
                 {#if $duration === 'constant'}
-                    <Slider id="duration" name="" {...ranges.duration} value={$durationRange?.[0] ?? 0.1} onChange={v => durationRange.set([v, ranges.duration.max])} />
+                    <Slider id="duration" showMinMax={false} {...ranges.duration} value={$durationRange?.[0] ?? 0.1} onChange={v => durationRange.set([v, ranges.duration.max])} />
                 {:else}
                     <RangeSlider {...ranges.duration} value={$durationRange ?? [0.1, 1]} onChange={v => durationRange.set(v)} />
                 {/if}
@@ -99,7 +99,7 @@
                     {/each}
                 </div>
                 {#if $trigger === 'constant'}
-                    <Slider id="trigger" name="" {...ranges.trigger} value={$triggerRange?.[0] ?? 0.5} onChange={v => triggerRange.set([v, ranges.trigger.max])} />
+                    <Slider id="trigger" showMinMax={false} {...ranges.trigger} value={$triggerRange?.[0] ?? 0.5} onChange={v => triggerRange.set([v, ranges.trigger.max])} />
                 {:else}
                     <RangeSlider {...ranges.trigger} value={$triggerRange ?? [0.5, 1]} onChange={v => triggerRange.set(v)} />
                 {/if}
@@ -114,7 +114,8 @@
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
-        min-width: min(80vw, 36rem);
+        width: fit-content;
+        margin-bottom: 1rem;
 
         h3 {
             padding-bottom: .5rem;
