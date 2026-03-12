@@ -367,7 +367,7 @@
     {/if}
 
     {#if !collapsed}
-        <div class="sequencer__resize-handle" on:mousedown={handleResizeStart}></div>
+        <div class="sequencer__resize-handle" role="button" tabindex="0" on:mousedown={handleResizeStart}></div>
     {/if}
 </section>
 
