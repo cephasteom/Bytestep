@@ -2,7 +2,7 @@
 
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { circuit, gates, updateParams, circuitParams, type Gate, showQuantumActions, persistCircuit } from '$lib/stores/circuit/circuit';
+    import { circuit, gates, updateParams, circuitParams, type Gate, showMappingSettings, persistCircuit } from '$lib/stores/circuit/circuit';
     import { areTouching, arraysAreEqual, clamp } from '$lib/utils';
     import { showSequencers } from '$lib/stores/sequencers';
     import { sonify } from '$lib/stores/sonification';
@@ -182,7 +182,7 @@
             </Tooltip>
             <Tooltip text="Open quantum configuration menu">
                 <Button
-                    onClick={() => showQuantumActions.set(true)}
+                    onClick={() => showMappingSettings.set(true)}
                     padding={'0'}
                     ariaLabel="Open quantum configuration menu"
                 >

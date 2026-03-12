@@ -4,7 +4,7 @@
  * dependent on the user defined options for how to map these values to musical parameters like pitch, amplitude, duration, and trigger.
  * It then populates the sequencers with the generated notes according to the selected strategy (replace or add).
  */
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { probabilities, phases, circuit } from "./circuit/circuit";
 import { data, type Note } from "./sequencers";
 import { sequencers, divisions, bars } from "./";
@@ -36,6 +36,17 @@ const defaults: SonificationOptions = {
     trigger: 'measure',
     triggerRange: [0.5, 1],
 }
+
+export const strategy = writable<SonificationOptions['strategy']>(defaults.strategy)
+export const note = writable<SonificationOptions['note']>(defaults.note)
+export const noteRange = writable<SonificationOptions['noteRange']>(defaults.noteRange)
+export const noteQuantize = writable<SonificationOptions['noteQuantize']>(defaults.noteQuantize)
+export const amp = writable<SonificationOptions['amp']>(defaults.amp)
+export const ampRange = writable<SonificationOptions['ampRange']>(defaults.ampRange)
+export const duration = writable<SonificationOptions['duration']>(defaults.duration)
+export const durationRange = writable<SonificationOptions['durationRange']>(defaults.durationRange)
+export const trigger = writable<SonificationOptions['trigger']>(defaults.trigger)
+export const triggerRange = writable<SonificationOptions['triggerRange']>(defaults.triggerRange)
 
 const generateNoteValues = (
     s: number,

@@ -9,7 +9,7 @@ import { persist } from "../localstorage";
 export const showCircuit = writable<boolean>(false)
 showCircuit.subscribe(persist('bs.showCircuit'))
 
-export const showQuantumActions = writable<boolean>(false)
+export const showMappingSettings = writable<boolean>(false)
 
 export const circuit = new QuantumCircuit();
 const saved = localStorage.getItem('bs.circuit')

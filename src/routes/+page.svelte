@@ -15,7 +15,7 @@
     import About from '$lib/components/About.svelte';
     import MIDISettings from '$lib/components/MIDISettings.svelte';
     import Circuit from '$lib/components/circuit/Circuit.svelte';
-    import QuantumActions from '$lib/components/QuantumActions.svelte';
+    import MappingSettings from '$lib/components/MappingSettings.svelte';
 
     onMount(loadAllStoreData);
 </script>
@@ -24,7 +24,7 @@
     <!-- Modals -->
     <About />
     <MIDISettings />
-    <QuantumActions />
+    <MappingSettings />
 
     <!-- Main app -->
     <Header />
