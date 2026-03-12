@@ -22,7 +22,7 @@
     <span class="min">{min}</span>
     <input 
         type="range" id={id} min={min} max={max} step={step} bind:value={value} class={"colour" + colour} 
-        on:input={throttle(() => onChange(value), 100)}
+        on:input={throttle(() => onChange(value), 10)}
     />
     <span class="max">{max}</span>
 </div>

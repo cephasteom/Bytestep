@@ -55,6 +55,7 @@
     box-sizing: border-box;
     background-color: transparent;
     cursor: pointer;
+    // transition: opacity 0.1s ease;
 
     &.dragging {
         cursor: move;

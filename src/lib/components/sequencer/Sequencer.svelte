@@ -130,6 +130,18 @@
     $: colour = `var(--theme-${(id % 5) + 1})`;
     $: minWidth = $bars * $divisions * 40 + "px";
 
+    let customHeight = 320;
+    let resizing = false;
+    let resizeStartY = 0;
+    let resizeStartHeight = 0;
+
+    const handleResizeStart = (e: MouseEvent) => {
+        resizing = true;
+        resizeStartY = e.clientY;
+        resizeStartHeight = customHeight;
+        e.preventDefault();
+    };
+
     // keys for all notes that currently exist in the store
     $: existingNoteKeys = new Set($data[id].notes.flatMap(n => {
         for (let d = 0; d < $divisions * $bars; d++) {
@@ -240,6 +252,14 @@
 
         window.addEventListener("keydown", handleKeyDown);
 
+        const handleResizeMove = (e: MouseEvent) => {
+            if (!resizing) return;
+            customHeight = Math.max(120, resizeStartHeight + (e.clientY - resizeStartY));
+        };
+        const handleResizeEnd = () => { resizing = false; };
+        window.addEventListener("mousemove", handleResizeMove);
+        window.addEventListener("mouseup", handleResizeEnd);
+
         let hasScrolled = false;
         const cancelActiveSequencerSubscription = activeSequencers.subscribe(ids => {
             if (!scrollableDiv || hasScrolled) return;
@@ -256,15 +276,18 @@
 
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("mousemove", handleResizeMove);
+            window.removeEventListener("mouseup", handleResizeEnd);
             cancelActiveSequencerSubscription();
         };
     });
 </script>
 
-<section 
-    class="sequencer" 
+<section
+    class="sequencer"
     class:sequencer--collapsed={collapsed}
-    style="border-color: {colour};"
+    class:sequencer--resizing={resizing}
+    style="border-color: {colour}; height: {collapsed ? '60px' : customHeight + 'px'};"
 >
     <Header {id} {colour} />
 
@@ -291,7 +314,8 @@
         
         <div
             class="sequencer__grid"
-            role="application"
+            role="button"
+            tabindex="0"
             on:mouseleave={handleMouseLeave}
             on:mouseup={handleGridMouseUp}
             style="min-width: {minWidth};"
@@ -341,6 +365,10 @@
             }}
         />
     {/if}
+
+    {#if !collapsed}
+        <div class="sequencer__resize-handle" on:mousedown={handleResizeStart}></div>
+    {/if}
 </section>
 
 <style lang="scss">
@@ -349,17 +377,46 @@
         flex-direction: column;
         gap: 1rem;
         background-color: var(--black-lighter);
-        padding: 1rem var(--spacer);
+        padding: 1rem var(--spacer) 0;
         border-radius: var(--border-radius);
         border: 1.5px solid;
-        max-height: 20rem;
-        transition: max-height 0.2s ease;
+        transition: height 0.2s ease;
         overflow: scroll;
         position: relative;
 
         &--collapsed {
-            max-height: 60px; // header height;
             overflow: hidden;
+        }
+
+        &--resizing {
+            transition: none;
+            user-select: none;
+        }
+
+        &__resize-handle {
+            position: sticky;
+            bottom: 0;
+            margin: 0 calc(-1 * var(--spacer));
+            height: 10px;
+            cursor: ns-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--black-lighter);
+            flex-shrink: 0;
+
+            &::after {
+                content: '';
+                width: 2rem;
+                height: 3px;
+                border-radius: 2px;
+                background-color: var(--grey-lighter);
+                transition: background-color 0.1s ease;
+            }
+
+            &:hover::after {
+                background-color: white;
+            }
         }
 
         &__scrollable {
