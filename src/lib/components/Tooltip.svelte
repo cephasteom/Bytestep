@@ -61,6 +61,8 @@
 
         &:hover .tooltip__text {
             visibility: visible;
+            opacity: .9;
+
         }
     }
 </style>

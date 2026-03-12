@@ -180,11 +180,11 @@
                     />
                 </Button>
             </Tooltip>
-            <Tooltip text="Open quantum configuration menu">
+            <Tooltip text="Open quantum mapping menu">
                 <Button
                     onClick={() => showMappingSettings.set(true)}
                     padding={'0'}
-                    ariaLabel="Open quantum configuration menu"
+                    ariaLabel="Open quantum mapping menu"
                 >
                     <SVG
                         type="cog"
@@ -192,11 +192,11 @@
                     />
                 </Button>
             </Tooltip>
-            <Tooltip text="Populate sequencers from circuit">
+            <Tooltip text="Generate sequencer patterns from circuit">
                 <Button
                     onClick={sonify}
                     padding={'0'}
-                    ariaLabel="Populate sequencers from circuit"
+                    ariaLabel="Generate sequencer patterns from circuit"
                 >
                     <SVG
                         type="magic"

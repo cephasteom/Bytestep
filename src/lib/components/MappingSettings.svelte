@@ -26,7 +26,6 @@
 
 <Dialog bind:open={$showMappingSettings} title="Mapping Settings">
     <div class="settings">
-
         <div class="settings__row">
             <h3>Mapping Strategy</h3>
             <div class="radio-group">

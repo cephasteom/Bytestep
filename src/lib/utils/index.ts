@@ -90,3 +90,12 @@ export const getDecimalPlaces = (value: number): number => {
     }
     return valueString.length - decimalIndex - 1;
 }
+
+/**
+ * Scale all values within an array to between the highest and lowert values in the array.
+ */
+export const normalizeArray = (arr: number[]): number[] => {
+    const min = Math.min(...arr);
+    const max = Math.max(...arr);
+    return arr.map(value => (value - min) / (max - min));
+};

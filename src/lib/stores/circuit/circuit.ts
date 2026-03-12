@@ -1,6 +1,6 @@
 import { readable, writable, derived } from 'svelte/store';
 import { complex, round, pow, abs } from 'mathjs'
-import { mapToRange } from '$lib/utils';
+import { mapToRange, normalizeArray } from '$lib/utils';
 // @ts-ignore
 import QuantumCircuit from 'quantum-circuit/dist/quantum-circuit.min.js';
 import { preset } from './preset';
@@ -41,12 +41,12 @@ export const probabilities = derived(
     [circuitParams],
     () => {
         const length = circuit.numAmplitudes()
-        return Array.from({length}, (_, i) => {
+        return normalizeArray(Array.from({length}, (_, i) => {
             const state = round(circuit.state[i] || complex(0, 0), 14);
             // @ts-ignore
             const result = +pow(abs(state), 2)
             return parseFloat(result.toFixed(5))
-        })
+        }))
     }
 )
 
@@ -54,7 +54,7 @@ export const phases = derived(
     [circuitParams],
     () => {
         const states = circuit.stateAsArray()
-        return states.map((state: any) => Math.abs(mapToRange(state.phase, -Math.PI, Math.PI, 0, 1)))
+        return normalizeArray(states.map((state: any) => Math.abs(mapToRange(state.phase, -Math.PI, Math.PI, 0, 1))))
     }
 )
 
