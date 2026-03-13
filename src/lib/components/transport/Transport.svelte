@@ -26,7 +26,7 @@
 <div class="transport">
     <div>
         <div class="transport__item">
-            <Tooltip text="Play / Stop (Space)">
+            <Tooltip text="Play / Stop (Space)" position="bottom">
                 <Button
                     onClick={toggleIsPlaying}
                 >
@@ -37,7 +37,7 @@
         </div>
         
         <div class="transport__item">
-            <Tooltip text="Record (R)">
+            <Tooltip text="Record (R)" position="bottom">
                 <Button
                     onClick={toggleIsRecording}
                 >
@@ -47,7 +47,7 @@
         </div>
         
         <div class="transport__item">
-            <Tooltip text="Generate sequencer patterns from circuit (G)">
+            <Tooltip text="Generate notes (G)" position="bottom">
                 <Button
                     onClick={sonify}
                 >
@@ -57,7 +57,7 @@
         </div>   
 
         <div class="transport__item">
-            <Tooltip text="Tempo">
+            <Tooltip text="Tempo" position="bottom">
                 <Input 
                     value={$bpm} 
                     onInput={(value) => bpm.set(clamp(parseInt(value) || 120, 20, 250) )}
@@ -68,7 +68,7 @@
         </div>
 
         <div class="transport__item">
-            <Tooltip text="Beats per bar">
+            <Tooltip text="Beats per bar" position="bottom">
                 <Input 
                     value={$timeSignature} 
                     onInput={(value) => timeSignature.set(clamp(parseInt(value) || 4, 1, 7) )}
@@ -79,7 +79,7 @@
         </div>
 
         <div class="transport__item">
-            <Tooltip text="Number of bars in the loop">
+            <Tooltip text="Bars / sequencer" position="bottom">
                 <Input 
                     value={$bars} 
                     onInput={(value) => bars.set(clamp(parseInt(value) || 2, 1, 4) )}
@@ -90,7 +90,7 @@
         </div>        
 
         <div class="transport__item">
-            <Tooltip text="Toggle metronome (T)">
+            <Tooltip text="Toggle metronome (T)" position="bottom">
                 <Button
                     onClick={toggleIsMetronome}
                 >
@@ -100,7 +100,7 @@
         </div>
     </div>
     
-    <Tooltip text="Bytebeat expression for global time. t = time, c = cycle.">
+    <Tooltip text="Transform global time" position="bottom">
         <Input
             value={$globalBytebeat.bytebeat}
             onInput={(value) => setGlobalBytebeat(value)}

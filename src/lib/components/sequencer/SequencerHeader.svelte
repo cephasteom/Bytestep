@@ -28,7 +28,7 @@
     <div>
         <h2>Sequencer {id + 1}</h2>
         
-        <Tooltip text={`Record sequencer ${id + 1}`}>
+        <Tooltip text={`Record sequencer`} position="right">
             <Button
                 onClick={() => toggleRecord(id)}
                 padding={'0'}
@@ -42,7 +42,7 @@
             </Button>
         </Tooltip>
 
-        <Tooltip text={`Clear sequencer ${id + 1}`}>
+        <Tooltip text={`Clear sequencer`} position="right">
             <Button
                 onClick={() => clearSequencer(id)}
                 padding={'0'}
@@ -55,7 +55,7 @@
             </Button>
         </Tooltip>
         
-        <Tooltip text={`Open MIDI settings for sequencer ${id + 1}`}>
+        <Tooltip text={`MIDI settings`} position="right">
             <Button
                 onClick={() => openMidiSettings(id)}
                 padding={'0'}
@@ -68,7 +68,7 @@
             </Button>
         </Tooltip>
 
-        <Tooltip text={muted ? "Unmute sequencer" : "Mute sequencer" + ` ${id + 1}`}>
+        <Tooltip text={muted ? "Unmute sequencer" : "Mute sequencer" + ` ${id + 1}`} position="right">
             <Button
                 onClick={() => toggleMute(id)}
                 padding={'0'}
@@ -82,7 +82,7 @@
         </Tooltip>
     </div>
     <div>
-        <Tooltip text={`Bytebeat expression for sequencer ${id + 1}.`}>
+        <Tooltip text={`Transform local time`}>
             <Input
                 value={bytebeat}
                 onInput={(value) => setBytebeat(id, value)}

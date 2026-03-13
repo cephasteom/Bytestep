@@ -25,7 +25,7 @@
             background-color: white;
             text-align: center;
             border-radius: 4px;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             position: absolute;
             z-index: 1000;
             box-shadow: var(--box-shadow);
@@ -62,7 +62,6 @@
         &:hover .tooltip__text {
             visibility: visible;
             opacity: .9;
-
         }
     }
 </style>

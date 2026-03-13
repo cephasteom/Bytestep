@@ -2,6 +2,7 @@
     import { sequencers } from '$lib/stores/';
     import { showCircuit } from '$lib/stores/circuit/circuit';
     import { addSequencer, removeLastSequencer } from '$lib/stores/sequencers';
+  import Tooltip from '../Tooltip.svelte';
     import Sequencer from './Sequencer.svelte';
 
     $: width = $showCircuit ? 60 : 100;
@@ -16,20 +17,24 @@
     {/each}
     <div class="sequencers__buttons">
         {#if $sequencers > 1}
-            <button 
-                class="sequencers__remove"
-                on:click={removeLastSequencer}
-            >
-                -
-            </button>
+            <Tooltip text={`Remove last sequencer`} position="right">
+                <button 
+                    class="sequencers__remove"
+                    on:click={removeLastSequencer}
+                >
+                    -
+                </button>
+            </Tooltip>
         {/if}
         {#if $sequencers < 8}
-            <button 
-                class="sequencers__add"
-                on:click={addSequencer}
-            >
-                +
-            </button>
+            <Tooltip text={`Add sequencer`} position="right">
+                <button 
+                    class="sequencers__add"
+                    on:click={addSequencer}
+                >
+                    +
+                </button>
+            </Tooltip>
         {/if}
     </div>
 </section>
