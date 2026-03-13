@@ -183,7 +183,12 @@
         transition: border-color 0.1s, color 0.1s, background-color 0.1s;
 
         input {
-            display: none;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
         }
 
         &.active {
@@ -195,6 +200,11 @@
         &:hover:not(.active) {
             border-color: var(--grey-lighter);
             color: white;
+        }
+
+        &:focus-within {
+            outline: none;
+            color: var(--theme-1);
         }
     }
 </style>
