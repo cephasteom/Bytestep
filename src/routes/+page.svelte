@@ -60,7 +60,6 @@
     .app {
         width: 100%;
         height: calc(100vh - var(--header-height));
-        overflow: hidden;
         padding: var(--spacer);
         display: flex;
         flex-direction: column;
@@ -70,7 +69,7 @@
 
         &__lower {
             display: flex;
-            gap: var(--spacer);
+            gap: calc(var(--spacer) - 8px); // account for focus outline
             flex: 1;
             min-height: 0;
         }

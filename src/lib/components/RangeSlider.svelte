@@ -88,6 +88,11 @@
         margin: 0;
         border-radius: 2px;
 
+        &:focus::-webkit-slider-thumb {
+            outline: 2px dotted var(--theme-1);
+            outline-offset: 2px;
+        }
+
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
             pointer-events: all;

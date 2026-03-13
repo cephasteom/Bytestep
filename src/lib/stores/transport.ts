@@ -120,7 +120,7 @@ export const mapTransportKeys = () => {
             toggleIsMetronome();
             e.preventDefault();
         }
-        if (e.code === 'Enter' && (e.metaKey || e.ctrlKey) && !e.altKey) {
+        if (e.code === 'KeyG' && !e.metaKey && !e.ctrlKey && !e.altKey) {
             sonify();
             e.preventDefault();
         }   

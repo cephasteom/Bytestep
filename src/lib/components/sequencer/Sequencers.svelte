@@ -42,10 +42,12 @@
         gap: var(--spacer);
         height: 100%;
         overflow-y: auto;
+        padding-left: 8px; // account for focus outline
 
         &__buttons {
             display: flex;
             gap: calc(var(--spacer) / 2);
+            padding-bottom: var(--spacer);
         }
 
         &__add, &__remove {

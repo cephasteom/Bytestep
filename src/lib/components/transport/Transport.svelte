@@ -35,8 +35,9 @@
             </Tooltip>
         </div>
         
+        
         <div class="transport__item">
-            <Tooltip text="Global Record (R)">
+            <Tooltip text="Record (R)">
                 <Button
                     onClick={toggleIsRecording}
                 >
@@ -44,7 +45,17 @@
                 </Button>
             </Tooltip>
         </div>
-
+        
+        <div class="transport__item">
+            <Tooltip text="Generate sequencer patterns from circuit (G)">
+                <Button
+                    onClick={sonify}
+                >
+                    <SVG type="magic" />
+                </Button>
+            </Tooltip>
+        </div>   
+             
         <div class="transport__item">
             <Tooltip text="Tempo">
                 <Input 
@@ -84,16 +95,6 @@
                     onClick={toggleIsMetronome}
                 >
                     <SVG type="metronome" fill={$isMetronome ? "var(--theme-1)" : "white"} />
-                </Button>
-            </Tooltip>
-        </div>
-
-        <div class="transport__item">
-            <Tooltip text="Generate sequencer patterns from circuit (ctrl/cmd + Enter)">
-                <Button
-                    onClick={sonify}
-                >
-                    <SVG type="magic" />
                 </Button>
             </Tooltip>
         </div>
