@@ -18,6 +18,7 @@
     import Tooltip from '$lib/components/Tooltip.svelte';
     import Button from '$lib/components/Button.svelte';
     import { sonify } from '$lib/stores/sonification';
+    import { showMappingSettings } from '$lib/stores/circuit/circuit';
 
     onMount(() => mapTransportKeys());
 </script>
@@ -34,7 +35,6 @@
 
             </Tooltip>
         </div>
-        
         
         <div class="transport__item">
             <Tooltip text="Record (R)">
@@ -55,7 +55,7 @@
                 </Button>
             </Tooltip>
         </div>   
-             
+
         <div class="transport__item">
             <Tooltip text="Tempo">
                 <Input 
@@ -99,6 +99,7 @@
             </Tooltip>
         </div>
     </div>
+    
     <Tooltip text="Bytebeat expression for global time. t = time, c = cycle.">
         <Input
             value={$globalBytebeat.bytebeat}

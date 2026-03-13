@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { openMidiSettings, showMidiSettings } from '$lib/stores/midi';
     import { showSequencers } from "$lib/stores/sequencers";
-    import { showCircuit } from "$lib/stores/circuit/circuit";
+    import { showCircuit, showMappingSettings } from "$lib/stores/circuit/circuit";
     import Button from "./Button.svelte";
     import SVG from "./SVG.svelte";
 
@@ -15,7 +15,8 @@
     const button: { label: string, icon: string, action: () => void }[] = [
         { label: 'Step', icon: 'piano', action: () => showSequencers.update(v => !v) },
         { label: 'Qbts', icon: 'circuit', action: () => showCircuit.update(v => !v) },
-        { label: 'MIDI', icon: 'midi', action: () => openMidiSettings() }
+        { label: 'MIDI', icon: 'midi', action: () => openMidiSettings() },
+        { label: 'Gen',  icon: 'cog', action: () => showMappingSettings.set(true) },
     ]
 
     onMount(() => {
@@ -38,7 +39,7 @@
             label={btn.label}
             padding={'0'}
             onClick={btn.action}
-            isActive={[$showSequencers, $showCircuit, $showMidiSettings][i]}
+            isActive={[$showSequencers, $showCircuit, $showMidiSettings, $showMappingSettings][i]}
         >
             <SVG type={btn.icon} width="2rem" />
         </Button>

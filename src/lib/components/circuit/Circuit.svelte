@@ -5,7 +5,7 @@
     import { circuit, gates, updateParams, circuitParams, type Gate, showMappingSettings, persistCircuit } from '$lib/stores/circuit/circuit';
     import { areTouching, arraysAreEqual, clamp } from '$lib/utils';
     import { showSequencers } from '$lib/stores/sequencers';
-    import { sonify } from '$lib/stores/sonification';
+
     import GateButton from './Gate.svelte';
     import Tooltip from '$lib/components/Tooltip.svelte';
     import Button from '$lib/components/Button.svelte';
@@ -176,30 +176,6 @@
                 >
                     <SVG 
                         type="erase" 
-                        width={'1.25rem'}
-                    />
-                </Button>
-            </Tooltip>
-            <Tooltip text="Open quantum mapping menu">
-                <Button
-                    onClick={() => showMappingSettings.set(true)}
-                    padding={'0'}
-                    ariaLabel="Open quantum mapping menu"
-                >
-                    <SVG
-                        type="cog"
-                        width={'1.25rem'}
-                    />
-                </Button>
-            </Tooltip>
-            <Tooltip text="Generate sequencer patterns from circuit">
-                <Button
-                    onClick={sonify}
-                    padding={'0'}
-                    ariaLabel="Generate sequencer patterns from circuit"
-                >
-                    <SVG
-                        type="magic"
                         width={'1.25rem'}
                     />
                 </Button>
