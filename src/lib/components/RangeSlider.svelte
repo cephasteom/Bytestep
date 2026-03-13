@@ -5,6 +5,7 @@
     export let max: number = 1;
     export let step: number = 0.01;
     export let value: [number, number] = [min, max];
+    export let colour: number = 1;
     export let onChange: (value: [number, number]) => void = () => {};
 
     $: lo = value[0];
@@ -23,15 +24,18 @@
 </script>
 
 <div class="range-slider" style="--lo: {loPercent}%; --hi: {hiPercent}%;">
-    <span class="bound">{lo.toFixed(getDecimalPlaces(step))}</span>
+    <span 
+        class="bound"
+        style:color={`var(--theme-${colour})`}
+    >{lo.toFixed(getDecimalPlaces(step))}</span>
     <div class="track-wrap">
         <div class="track">
-            <div class="fill"></div>
+            <div class="fill" style:background={`var(--theme-${colour})`}></div>
         </div>
         <input type="range" {min} {max} {step} value={lo} on:input={updateLo} />
         <input type="range" {min} {max} {step} value={hi} on:input={updateHi} />
     </div>
-    <span class="bound">{hi.toFixed(getDecimalPlaces(step))}</span>
+    <span class="bound" style:color={`var(--theme-${colour})`}>{hi.toFixed(getDecimalPlaces(step))}</span>
 </div>
 
 <style lang="scss">
@@ -69,7 +73,6 @@
             left: var(--lo);
             right: calc(100% - var(--hi));
             height: 100%;
-            background: var(--theme-1);
             border-radius: 2px;
         }
     }

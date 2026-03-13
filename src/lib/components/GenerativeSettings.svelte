@@ -24,10 +24,10 @@
     };
 </script>
 
-<Dialog bind:open={$showMappingSettings} title="Mapping Settings">
+<Dialog bind:open={$showMappingSettings} title="Generate">
     <div class="settings">
         <div class="settings__row">
-            <h3>Mapping Strategy</h3>
+            <h3>Strategy</h3>
             <div class="radio-group">
                 {#each ['replace', 'add'] as opt}
                     <label class="radio-pill" class:active={$strategy === opt}>
@@ -37,6 +37,25 @@
                 {/each}
             </div>
         </div>
+
+        <div class="settings__row">
+            <h3>Rhythm</h3>
+            <div class="settings__controls">
+                <div class="radio-group">
+                    {#each mappingOptions as opt}
+                        <label class="radio-pill" class:active={$trigger === opt}>
+                            <input type="radio" bind:group={$trigger} value={opt} />
+                            {opt}
+                        </label>
+                    {/each}
+                </div>
+                {#if $trigger === 'constant'}
+                    <Slider id="trigger" showMinMax={false} {...ranges.trigger} value={$triggerRange?.[0] ?? 0.5} onChange={v => triggerRange.set([v, ranges.trigger.max])} />
+                {:else}
+                    <RangeSlider {...ranges.trigger} value={$triggerRange ?? [0.5, 1]} onChange={v => triggerRange.set(v)} />
+                {/if}
+            </div>
+        </div>        
 
         <div class="settings__row">
             <h3>Note</h3>
@@ -82,7 +101,7 @@
         {/if}
 
         <div class="settings__row">
-            <h3>Amplitude</h3>
+            <h3>Amp</h3>
             <div class="settings__controls">
                 <div class="radio-group">
                     {#each mappingOptions as opt}
@@ -118,26 +137,6 @@
                 {/if}
             </div>
         </div>
-
-        <div class="settings__row">
-            <h3>Trigger</h3>
-            <div class="settings__controls">
-                <div class="radio-group">
-                    {#each mappingOptions as opt}
-                        <label class="radio-pill" class:active={$trigger === opt}>
-                            <input type="radio" bind:group={$trigger} value={opt} />
-                            {opt}
-                        </label>
-                    {/each}
-                </div>
-                {#if $trigger === 'constant'}
-                    <Slider id="trigger" showMinMax={false} {...ranges.trigger} value={$triggerRange?.[0] ?? 0.5} onChange={v => triggerRange.set([v, ranges.trigger.max])} />
-                {:else}
-                    <RangeSlider {...ranges.trigger} value={$triggerRange ?? [0.5, 1]} onChange={v => triggerRange.set(v)} />
-                {/if}
-            </div>
-        </div>
-
     </div>
 </Dialog>
 
