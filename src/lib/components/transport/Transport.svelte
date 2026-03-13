@@ -17,6 +17,7 @@
     import Input from '$lib/components/Input.svelte';
     import Tooltip from '$lib/components/Tooltip.svelte';
     import Button from '$lib/components/Button.svelte';
+  import { sonify } from '$lib/stores/sonification';
 
     onMount(() => mapTransportKeys());
 </script>
@@ -80,6 +81,16 @@
                     onClick={toggleIsMetronome}
                 >
                     <SVG type="metronome" fill={$isMetronome ? "var(--theme-1)" : "white"} />
+                </Button>
+            </Tooltip>
+        </div>
+
+        <div class="transport__item">
+            <Tooltip text="Generate sequencer patterns from circuit">
+                <Button
+                    onClick={sonify}
+                >
+                    <SVG type="magic" />
                 </Button>
             </Tooltip>
         </div>
