@@ -1,38 +1,48 @@
 <script lang="ts">
-  import Button from "./Button.svelte";
-  import SVG from "./SVG.svelte";
-  import { openMidiSettings, showMidiSettings } from '$lib/stores/midi';
-  import { showSequencers } from "$lib/stores/sequencers";
-  import { showCircuit } from "$lib/stores/circuit/circuit";
+    import { onMount } from "svelte";
+    import { openMidiSettings, showMidiSettings } from '$lib/stores/midi';
+    import { showSequencers } from "$lib/stores/sequencers";
+    import { showCircuit } from "$lib/stores/circuit/circuit";
+    import Button from "./Button.svelte";
+    import SVG from "./SVG.svelte";
+
+    const actions: (() => void)[] = [
+        () => showSequencers.update(v => !v),
+        () => showCircuit.update(v => !v),
+        () => openMidiSettings()
+    ]
+
+    const button: { label: string, icon: string, action: () => void }[] = [
+        { label: 'Step', icon: 'piano', action: () => showSequencers.update(v => !v) },
+        { label: 'Qbts', icon: 'circuit', action: () => showCircuit.update(v => !v) },
+        { label: 'MIDI', icon: 'midi', action: () => openMidiSettings() }
+    ]
+
+    onMount(() => {
+        // use cmd/ctrl + 1, 2, 3 to toggle the sidebar buttons
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.metaKey || e.ctrlKey) {
+                e.preventDefault();
+                actions[parseInt(e.key) - 1]?.();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+    
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    });
 </script>
 
 <aside class="sidebar">
-    <Button
-        label="Step"
-        padding={'0'}
-        onClick={() => showSequencers.update(v => !v)}
-        isActive={$showSequencers}
-    >
-        <SVG type="piano" width="2rem" />
-    </Button>
-
-    <Button
-        label="Qbts"
-        padding={'0'}
-        onClick={() => showCircuit.update(v => !v)}
-        isActive={$showCircuit}
-    >
-        <SVG type="circuit" width="2rem" />
-    </Button>
-    
-    <Button
-        label="MIDI"
-        padding={'0'}
-        onClick={() => openMidiSettings()}
-        isActive={$showMidiSettings}
-    >
-        <SVG type="midi" width="2rem" />
-    </Button>
+    {#each button as btn, i}
+        <Button
+            label={btn.label}
+            padding={'0'}
+            onClick={btn.action}
+            isActive={[$showSequencers, $showCircuit, $showMidiSettings][i]}
+        >
+            <SVG type={btn.icon} width="2rem" />
+        </Button>
+    {/each}
 </aside>
 
 <style lang="scss">
