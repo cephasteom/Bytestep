@@ -27,7 +27,7 @@
             border-radius: 4px;
             padding: 0.5rem 1rem;
             position: absolute;
-            z-index: 1;
+            z-index: 1000;
             box-shadow: var(--box-shadow);
             font-size: 0.875rem;
             line-height: 1.2;

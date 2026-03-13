@@ -17,7 +17,7 @@
     import Input from '$lib/components/Input.svelte';
     import Tooltip from '$lib/components/Tooltip.svelte';
     import Button from '$lib/components/Button.svelte';
-  import { sonify } from '$lib/stores/sonification';
+    import { sonify } from '$lib/stores/sonification';
 
     onMount(() => mapTransportKeys());
 </script>
@@ -25,15 +25,18 @@
 <div class="transport">
     <div>
         <div class="transport__item">
-            <Button
-                onClick={toggleIsPlaying}
-            >
-                <SVG type={$isPlaying ? 'stop' : 'play'} fill={$isPlaying ? "var(--theme-4)" : "var(--theme-1)"} />
-            </Button>
+            <Tooltip text="Play / Stop (Space)">
+                <Button
+                    onClick={toggleIsPlaying}
+                >
+                    <SVG type={$isPlaying ? 'stop' : 'play'} fill={$isPlaying ? "var(--theme-4)" : "var(--theme-1)"} />
+                </Button>
+
+            </Tooltip>
         </div>
         
         <div class="transport__item">
-            <Tooltip text="Global Record">
+            <Tooltip text="Global Record (R)">
                 <Button
                     onClick={toggleIsRecording}
                 >
@@ -76,7 +79,7 @@
         </div>        
 
         <div class="transport__item">
-            <Tooltip text="Toggle metronome">
+            <Tooltip text="Toggle metronome (T)">
                 <Button
                     onClick={toggleIsMetronome}
                 >
@@ -86,7 +89,7 @@
         </div>
 
         <div class="transport__item">
-            <Tooltip text="Generate sequencer patterns from circuit">
+            <Tooltip text="Generate sequencer patterns from circuit (ctrl/cmd + Enter)">
                 <Button
                     onClick={sonify}
                 >

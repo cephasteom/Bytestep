@@ -21,7 +21,7 @@
     onMount(() => {
         // use cmd/ctrl + 1, 2, 3 to toggle the sidebar buttons
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.metaKey || e.ctrlKey) {
+            if ((e.metaKey || e.ctrlKey) && parseInt(e.key) + 1 <= actions.length) {
                 e.preventDefault();
                 actions[parseInt(e.key) - 1]?.();
             }

@@ -6,6 +6,7 @@ import { beepAt } from '$lib/sound/utils';
 import { mod } from '$lib/utils';
 import { evalBytebeat } from '$lib/utils/bytebeat';
 import { persist } from './localstorage';
+import { sonify } from './sonification';
 
 /**
  * Global transport stores
@@ -119,6 +120,10 @@ export const mapTransportKeys = () => {
             toggleIsMetronome();
             e.preventDefault();
         }
+        if (e.code === 'Enter' && (e.metaKey || e.ctrlKey) && !e.altKey) {
+            sonify();
+            e.preventDefault();
+        }   
     };
 
     window.addEventListener('keydown', handleKeyDown);
