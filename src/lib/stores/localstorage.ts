@@ -45,7 +45,7 @@ export const loadAllStoreData = () => {
     // populate transport data
     isMetronome.set(retrieve<boolean>('bs.isMetronome', false));
     bpm.set(retrieve<number>('bs.bpm', 120));
-    bars.set(retrieve<number>('bs.bars', 4));
+    bars.set(retrieve<number>('bs.bars', 2));
     timeSignature.set(retrieve<number>('bs.timeSignature', 4));
 
     // populate sonification data
