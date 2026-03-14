@@ -275,59 +275,58 @@
 
     {#if collapsed}
         <Progress {id} {colour} />
-    {/if}
-
-    <div 
-        class="sequencer__scrollable"
-        tabindex="-1"
-        bind:this={scrollableDiv}
-    >
-        <div class="sequencer__piano">
-            {#each Array(notes) as _, noteIndex}
-                <button
-                    class="sequencer__piano-key"
-                    style="grid-row: {(notes - noteIndex) + 1};"
-                    class:sequencer__piano-key--accidental={[1, 3, 6, 8, 10].includes(noteIndex % 12)}
-                    class:sequencer__piano-key--active={noteIndex === currentNote}
-                    on:click={() => handlePianoKeyClick(noteIndex)}
-                >{!(noteIndex % 12) ? `C${Math.floor(noteIndex / 12)}` : ''}</button>
-            {/each}
-        </div>
-        
-        <div
-            class="sequencer__grid"
-            role="button"
-            tabindex="0"
-            on:mouseleave={handleMouseLeave}
-            on:mouseup={handleGridMouseUp}
-            style="min-width: {minWidth};"
-            class:sequencer__grid--dragging={mouseIsDown && selectedNotes.size > 0}
+    {:else}    
+        <div 
+            class="sequencer__scrollable"
+            tabindex="-1"
+            bind:this={scrollableDiv}
         >
-            {#each Array($divisions * $bars) as _, divisionIndex}
+            <div class="sequencer__piano">
                 {#each Array(notes) as _, noteIndex}
-                    <Cell
-                        division={divisionIndex}
-                        note={noteIndex}
-                        row={(notes - noteIndex) + 1}
-                        on={$data[id].notes.some(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)}
-                        amp={$data[id].notes.find(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)?.amp ?? 0.75}
-                        focused={currentCell.division === divisionIndex && currentCell.note === noteIndex}
-                        selected={selectedNotes.has(cellKey(divisionIndex, noteIndex))}
-                        active={$sequencerTs[id] !== -1 && $sequencerTs[id] % ($divisions * $bars) === divisionIndex}
-                        handleMouseOver={() => { currentNote = noteIndex; hoverDivision = divisionIndex; }}
-                        handleMouseDown={handleMouseDown}
-                        handleMouseUp={handleMouseUp}
-                        handleMouseFocus={handleMouseFocus}
-                        {mouseIsDown}
-                        colour={colour}
-                        ghost={ghostCells.has(cellKey(divisionIndex, noteIndex))}
-                        dragging={mouseIsDown && selectedNotes.size > 0}
-                    />
+                    <button
+                        class="sequencer__piano-key"
+                        style="grid-row: {(notes - noteIndex) + 1};"
+                        class:sequencer__piano-key--accidental={[1, 3, 6, 8, 10].includes(noteIndex % 12)}
+                        class:sequencer__piano-key--active={noteIndex === currentNote}
+                        on:click={() => handlePianoKeyClick(noteIndex)}
+                    >{!(noteIndex % 12) ? `C${Math.floor(noteIndex / 12)}` : ''}</button>
                 {/each}
-            {/each}
+            </div>
+            
+            <div
+                class="sequencer__grid"
+                role="button"
+                tabindex="0"
+                on:mouseleave={handleMouseLeave}
+                on:mouseup={handleGridMouseUp}
+                style="min-width: {minWidth};"
+                class:sequencer__grid--dragging={mouseIsDown && selectedNotes.size > 0}
+            >
+                {#each Array($divisions * $bars) as _, divisionIndex}
+                    {#each Array(notes) as _, noteIndex}
+                        <Cell
+                            division={divisionIndex}
+                            note={noteIndex}
+                            row={(notes - noteIndex) + 1}
+                            on={$data[id].notes.some(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)}
+                            amp={$data[id].notes.find(n => happensWithin(divisionIndex, n.position) && n.note === noteIndex)?.amp ?? 0.75}
+                            focused={currentCell.division === divisionIndex && currentCell.note === noteIndex}
+                            selected={selectedNotes.has(cellKey(divisionIndex, noteIndex))}
+                            active={$sequencerTs[id] !== -1 && $sequencerTs[id] % ($divisions * $bars) === divisionIndex}
+                            handleMouseOver={() => { currentNote = noteIndex; hoverDivision = divisionIndex; }}
+                            handleMouseDown={handleMouseDown}
+                            handleMouseUp={handleMouseUp}
+                            handleMouseFocus={handleMouseFocus}
+                            {mouseIsDown}
+                            colour={colour}
+                            ghost={ghostCells.has(cellKey(divisionIndex, noteIndex))}
+                            dragging={mouseIsDown && selectedNotes.size > 0}
+                        />
+                    {/each}
+                {/each}
+            </div>
         </div>
-
-    </div>
+    {/if}
     {#if currentCell.division !== -1 && currentCell.note !== -1 && $data[id].notes.some(n => n.position === divisionToPosition(currentCell.division) && n.note === currentCell.note)}
         <Meta
             {id}
