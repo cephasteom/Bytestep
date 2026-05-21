@@ -7,6 +7,9 @@ import { mod } from '$lib/utils';
 import { evalBytebeat } from '$lib/utils/bytebeat';
 import { persist } from './localstorage';
 import { sonify } from './sonification';
+import { initAudio, loadSamples } from '$lib/oto'
+
+let otoReady = false
 
 /**
  * Global transport stores
@@ -85,7 +88,16 @@ function createLoop() {
 divisions.subscribe(() => createLoop());
 
 
-const play = () => transport.start();
+const play = async () => {
+  if (!otoReady) {
+    await initAudio();
+    await loadSamples();
+    otoReady = true
+  }
+  transport.start();
+}
+
+
 const stop = () => {
     transport.stop(immediate());
     t.set(-1);

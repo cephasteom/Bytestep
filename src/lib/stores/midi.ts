@@ -6,6 +6,8 @@ import { t, isRecording, cps } from "./transport";
 import { persist } from "./localstorage";
 import { immediate, Loop } from "tone";
 import { clamp, getPosition } from "$lib/utils";
+import { triggerNote } from '$lib/oto';
+import { presets } from "./sequencers";
 
 /**
  * MIDI inputs and outputs, and connections to sequencers
@@ -171,30 +173,48 @@ function createLoop() {
 
             const output = conns[+sequencerIndex]?.output;
             const channel = conns[+sequencerIndex]?.outputChannel;
-            if (!output) return;
+            const synthPreset = get(presets)[+sequencerIndex] || 'organ';
 
-            const midiOutput = WebMidi.getOutputByName(output);
-            if (!midiOutput) return;
-            
-            notes.forEach(({ position, note, amp, duration }) => {
-                const noteDelta = quantize ? 0 : (position - nextPosition) * cycleDuration;
+            if (output) {
+              const midiOutput = WebMidi.getOutputByName(output);
+              if (!midiOutput) return;
+              
+              notes.forEach(({ position, note, amp, duration }) => {
+                  const noteDelta = quantize ? 0 : (position - nextPosition) * cycleDuration;
 
-                // cut all notes on that channel just before playing new note
-                midiOutput.sendAllNotesOff({ 
-                    time: `+${(delta * 1000) + (noteDelta) - 5}`, 
-                    channels: channel === null ? undefined : (channel as number + 1)
-                });
-            
-                let options: {[key: string]: any} = { 
-                    attack: amp, 
-                    duration: duration * cycleDuration, 
-                    time: `+${(delta * 1000) + (noteDelta)}`,
-                }
+                  // cut all notes on that channel just before playing new note
+                  midiOutput.sendAllNotesOff({ 
+                      time: `+${(delta * 1000) + (noteDelta) - 5}`, 
+                      channels: channel === null ? undefined : (channel as number + 1)
+                  });
+              
+                  let options: {[key: string]: any} = { 
+                      attack: amp, 
+                      duration: duration * cycleDuration, 
+                      time: `+${(delta * 1000) + (noteDelta)}`,
+                  }
 
-                channel !== null && (options.channels = channel as number + 1);
-                
-                midiOutput.playNote(note, options);
-            });
+                  channel !== null && (options.channels = channel as number + 1);
+                  
+                  midiOutput.playNote(note, options);
+              });
+            } else {
+
+            // Internal player (Oto)
+              notes.forEach(({ position, note, amp, duration }) => {
+                  const noteDelta = quantize ? 0 : (position - nextPosition) * cycleDuration;
+                  triggerNote(
+                      +sequencerIndex,
+                      note,
+                      amp,
+                      duration * cycleDuration,
+                      time + (noteDelta / 1000),
+                      synthPreset
+                  );
+              });
+            }
+
+
         });
 
     }, `${get(divisions)}n`).start(0);

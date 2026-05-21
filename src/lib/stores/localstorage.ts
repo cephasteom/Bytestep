@@ -1,6 +1,6 @@
 import { WebMidi } from "webmidi";
 import { connections, midiSettingsActive } from "./midi";
-import { activeSequencers, sequencerHeights, data, globalBytebeat, showSequencers } from "./sequencers";
+import { activeSequencers, sequencerHeights, data, globalBytebeat, showSequencers, presets } from "./sequencers";
 import { bpm, isMetronome } from "./transport";
 import { bars, sequencers, timeSignature } from ".";
 import { showCircuit } from "./circuit/circuit";
@@ -41,6 +41,9 @@ export const loadAllStoreData = () => {
         ...retrieve<any>('bs.sequencerData', {})
     }));
     activeSequencers.set(retrieve<number[]>('bs.activeSequencers', []));
+    // Sequencer internal player presets
+    presets.set(retrieve<Record<number, string>>('bs.presets', {}));
+
 
     // populate transport data
     isMetronome.set(retrieve<boolean>('bs.isMetronome', false));

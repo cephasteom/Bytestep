@@ -28,7 +28,7 @@ export type SequencerData = { [sequencerIndex: number]: {
     muted: boolean;
     notes: Note[],
     bytebeat: string,
-    hasError?: boolean
+    hasError?: boolean,
 } };
 
 export const initialData: SequencerData = Array.from({ length: get(sequencers) }).reduce<SequencerData>(
@@ -47,11 +47,13 @@ export const data = writable<SequencerData>(initialData);
 data.subscribe(persist('bs.sequencerData'));
 
 export const removeLastSequencer = () => {
+    const lastIndex = Object.keys(get(data)).length - 1;
     data.update((sequencers) => {
         const newSequencers = { ...sequencers };
         delete newSequencers[Object.keys(newSequencers).length - 1];
         return newSequencers;
     });
+    presets.update(p => { const { [lastIndex]: _, ...rest } = p; return rest; });
     sequencers.update(n => Math.max(1, n - 1));
 };
 
@@ -67,6 +69,7 @@ export const addSequencer = () => {
             bytebeat: "t"
         }
     }));
+    presets.update(p => ({ ...p, [newIndex]: 'piano' }));
     sequencers.update(n => n + 1);
 };
 
@@ -82,6 +85,13 @@ export const setGlobalBytebeat = (bytebeat: string) => {
         hasError: !isValid
     });
 }
+
+export const presets = writable<Record<number, string>>(
+    Array.from({ length: get(sequencers) }).reduce<Record<number, string>>(
+        (acc, _, i) => ({ ...acc, [i]: 'piano' }), {}
+    )
+);
+presets.subscribe(persist('bs.presets'));
 
 export const toggleMute = (sequencer: number) => {
     data.update((sequencers) => ({
