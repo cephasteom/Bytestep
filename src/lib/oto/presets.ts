@@ -2,6 +2,7 @@ export type Preset = {
     type: 'synth' | 'sampler'
     label: string
     params: Record<string, number>
+    pitched?: boolean
 }
 
 export const PRESETS: Record<string, Preset> = {
@@ -32,23 +33,80 @@ export const PRESETS: Record<string, Preset> = {
     },
     808: {
         type: 'sampler',
-        label: '808',
-        params: { bank: '808' }
+        label: 'Drum 808',
+        params: { bank: '808' },
+        pitched: false
     },
     blip: {
         type: 'sampler',
         label: 'Blip',
         params: { bank: 'blip' }
     },
-    pluck: {
-        type: 'sampler',
-        label: 'Pluck',
-        params: { bank: 'pluck' }
-    },
     arpy: {
         type: 'sampler',
         label: 'Arpy',
         params: { bank: 'arpy' }
+    },
+    kick: {
+        type: 'sampler',
+        label: 'Kick 808',
+        params: { bank: '808bd' },
+        pitched: false
+    },
+    snare: {
+        type: 'sampler',
+        label: 'Snare 808',
+        params: { bank: 'sd808' },
+        pitched: false
+    },
+    hihat: {
+        type: 'sampler',
+        label: 'HiHat 808',
+        params: { bank: 'hh' },
+        pitched: false
+    },
+    tabla: {
+        type: 'sampler',
+        label: 'Tabla',
+        params: { bank: 'tabla' }
+    },
+    jvbass: {
+        type: 'sampler',
+        label: 'JVBass',
+        params: { bank: 'jvbass' }
+    },
+    clap: {
+        type: 'sampler',
+        label: 'Clap',
+        params: { bank: 'clap808' },
+        pitched: false
+    },
+    cymbal: {
+        type: 'sampler',
+        label: 'Cymbal',
+        params: { bank: 'cy808' },
+        pitched: false
+    },
+    stab: {
+        type: 'sampler',
+        label: 'Stab',
+        params: { bank: 'stab' }
+    },
+    fm: {
+        type: 'sampler',
+        label: 'Drum Loop F',
+        params: { bank: 'fm' }
+    },
+    jazz: {
+        type: 'sampler',
+        label: 'Drum Loop J',
+        params: { bank: 'jazz' }
+    },
+    industrial: {
+        type: 'sampler',
+        label: 'Industrial',
+        params: { bank: 'industrial' },
+        pitched: false
     },
 }
 

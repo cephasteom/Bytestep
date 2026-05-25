@@ -48,8 +48,13 @@ export function handleSynthEvent(time: number, params: Dictionary) {
             console.warn(`Bank "${bankName}" not found for preset "${preset}".`)
             return
         }
-        const { i, n: mappedNote } = mapNoteToSample(n, bank.length)
-        inst.play({ ...config.params, n: mappedNote, amp, dur }, time)
+        if (config.pitched === false) {
+          const i = n % bank.length
+          inst.play({ ...config.params, i, amp, dur }, time)
+        } else {
+          const { i, n: mappedNote } = mapNoteToSample(n, bank.length)
+          inst.play({ ...config.params, i, n: mappedNote, amp, dur }, time)
+        }
     } else {
         inst.play({ ...config.params, n, amp, dur }, time)
     }
