@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@neodrag/svelte": "^2.3.3",
+		"@rnbo/js": "^1.4.2",
 		"mathjs": "^15.1.1",
 		"normalize.css": "^8.0.1",
 		"prism-code-editor": "^5.0.1",
